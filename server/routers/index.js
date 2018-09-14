@@ -15,12 +15,14 @@ router.post('/admin/login', admin.login)
 router.get('/admin/userInfo', admin.getUserInfo)
 router.post('/admin/userInfo', admin.updateUser)
 router.get('/adminList', admin.getAdminList)
+router.get('/admin/checkPassword', admin.checkPassword)
 
 /* 用户 */
 router.post('/user/login', user.login)
 router.get('/user/userInfo', user.getUserInfo)
 router.post('/user/userInfo', user.updateUser)
 router.get('/userList', user.getUserList)
+router.get('/user/checkPassword', user.checkPassword)
 
 /* 家庭房屋信息 */
 router.get('/room', room.getRoom)
@@ -33,5 +35,7 @@ router.put('/repair', repair.updateRepair)
 /* 零件 */
 router.get('/part', part.getPart)
 router.post('/part', part.updatePart)
+router.get('/partType', part.getPartType)
+router.post('/partType', part.updatePartType)
 
 module.exports = router

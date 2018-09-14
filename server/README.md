@@ -12,6 +12,7 @@
 | -1 | 读取数据库失败 |
 | 20001 | 用户名已存在 |
 | 20002 | token失效 |
+| 20003 | 密码错误 |
 
 # 接口定义
 
@@ -138,6 +139,26 @@ Content-Type:application/json
             "isDel": 0
         }
     ]
+}
+```
+***
+### 验证密码
+#### 请求
+```http
+GET /admin/checkPassword
+```
+#### 参数
+```json
+name: 用户名
+password: 密码
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 20000,
+    "msg": "验证成功"
 }
 ```
 ***
@@ -285,6 +306,26 @@ Content-Type:application/json
             "room": "102"
         }
     ]
+}
+```
+***
+### 验证密码
+#### 请求
+```http
+GET /user/checkPassword
+```
+#### 参数
+```json
+name: 用户名
+password: 密码
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 20000,
+    "msg": "验证成功"
 }
 ```
 ***
@@ -541,6 +582,54 @@ count: 剩余数量
             "type_name": "螺丝"
         }
     ]
+}
+```
+***
+### 查询零件类型
+#### 请求
+```http
+GET /partType
+```
+#### 参数
+```
+无
+```
+#### 响应
+```json
+{
+    "code": 20000,
+    "msg": "零件类型列表",
+    "data": [
+        {
+            "id": 1,
+            "type_name": "螺丝",
+            "isDel": 0
+        },
+        {
+            "id": 2,
+            "type_name": "地漏",
+            "isDel": 0
+        }
+    ]
+}
+```
+***
+### 新建/更新/删除零件类型
+#### 请求
+```http
+POST /partType
+```
+#### 参数
+```
+id: 零件类型id
+type_name: 类型名称     
+isDel: 删除     // 0:未删, 1: 已删
+```
+#### 响应
+```json
+{
+    "code": 20000,
+    "msg": "更新成功"
 }
 ```
 ***

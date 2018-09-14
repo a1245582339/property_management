@@ -122,3 +122,19 @@ exports.getUserList = async ctx => {
         }
     })
 }
+
+
+exports.checkPassword = async ctx => {
+    var query = ctx.request.query
+    try{
+        let $selectUser = `select password from admin_user where name="${query.name}"`
+        let password = await model.operateSql($selectUser)
+        if (password[0].password == query.password) {
+            ctx.body = {code: 20000, msg: '验证成功'}
+        } else {
+            ctx.body = {code: 20003, msg: '密码错误'}
+        }
+    } catch (err) {
+        ctx.body = {code: -1, msg: '验证失败'}
+    }
+}
