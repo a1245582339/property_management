@@ -36,7 +36,7 @@ Content-Type:application/json
     "code": 20000,
     "msg": "创建token成功",
     "data": {
-        "token": "1536906504242tokenddd"    // token
+        "token": "1536906504242tokenddd"
     }
 }
 ```
@@ -79,13 +79,11 @@ POST /admin/userInfo
 ```
 #### 参数
 ```json
-{
-    "id": 1,
-    "name": "aaa",
-    "password": "000000",
-    "role": 2,
-    "isDel": 1
-}
+    id: 用户id,
+    name: 用户名,
+    password: 密码,
+    role: 角色,
+    isDel: 删除     // 0: 未删, 1: 已删
 
 // 有id时为更新，否则为新增
 ```
@@ -165,7 +163,7 @@ Content-Type:application/json
     "code": 20000,
     "msg": "创建token成功",
     "data": {
-        "token": "1536906504242tokenddd"    // token
+        "token": "1536906504242tokenddd"
     }
 }
 ```
@@ -214,16 +212,14 @@ POST /admin/userInfo
 ```
 #### 参数
 ```json
-{
-    "id": 1,
-    "name": "aaa",
-    "password": "000000",
-    "sex": 0,
-    "room_id": 1,
-    "role": 2,
-    "tel": "13555555555",
-    "isDel": 1
-}
+id: 用户id,
+name: 用户名,
+password: 密码,
+sex: 性别,
+room_id: 房间id,
+role: 角色,
+tel: 手机号,
+isDel: 删除     // 0: 未删, 1: 已删
 
 // 有id时为更新，否则为新增
 ```
@@ -291,3 +287,260 @@ Content-Type:application/json
     ]
 }
 ```
+***
+***
+## 家庭房屋信息
+
+### 查询房屋
+
+#### 请求
+```http
+GET /room
+```
+#### 参数
+```json
+id: 房间id
+room_num: 房间门牌号
+building: 楼号
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 2000,
+    "msg": "房间信息",
+    "data": [
+        {
+            "id": 1,
+            "room_num": "101",
+            "building": "1",
+            "area": 50
+        },
+        {
+            "id": 2,
+            "room_num": "102",
+            "building": "1",
+            "area": 50
+        },
+        {
+            "id": 3,
+            "room_num": "201",
+            "building": "1",
+            "area": 60
+        },
+        {
+            "id": 4,
+            "room_num": "202",
+            "building": "1",
+            "area": 60
+        }
+    ]
+}
+```
+***
+***
+## 维修信息
+
+### 查询维修
+
+#### 请求
+```http
+GET /repair
+```
+#### 参数
+```json
+id: 维修信息
+limit: 查询条数
+page: 查询页数
+title: 标题信息     // 支持关键字查询
+status: 状态        // 1：已报修2：已联系 3：已派修 4：已维修 5：已缴费
+user_id: 用户id
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 20000,
+    "msg": "维修列表",
+    "data": [
+        {
+            "id": 1,
+            "title": "title test",
+            "status": 1,
+            "photos": null,
+            "price": null,
+            "user_id": 1,
+            "create_time": "1536751006000",
+            "appointment_time": null,
+            "pay_time": null,
+            "name": "请问",
+            "tel": "1321",
+            "room_num": "101"
+        },
+        {
+            "id": 2,
+            "title": "test2",
+            "status": 4,
+            "photos": null,
+            "price": 50,
+            "user_id": 2,
+            "create_time": "1536800973000",
+            "appointment_time": "1536887373000",
+            "pay_time": null,
+            "name": "请sada",
+            "tel": "2132",
+            "room_num": "102"
+        },
+        {
+            "id": 3,
+            "title": "测试请求",
+            "status": 5,
+            "photos": "",
+            "price": 100.5,
+            "user_id": 1,
+            "create_time": "1536828608300",
+            "appointment_time": "1536834820116",
+            "pay_time": "1536892823306",
+            "name": "请问",
+            "tel": "1321",
+            "room_num": "101"
+        }
+    ]
+}
+```
+***
+### 创建维修信息
+
+#### 请求
+```http
+POST /repair
+```
+#### 参数
+```json
+title: 标题信息
+photos: 照片地址    // 可选
+user_id: 用户id
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 20000,
+    "msg": "创建成功"
+}
+```
+***
+### 更改维修信息
+
+#### 请求
+```http
+PUT /repair
+```
+#### 参数
+```
+id: 维修信息id
+status: 状态    // 1：已报修2：已联系 3：已派修 4：已维修 5：已缴费
+price: 价格     // status = 4 时传此参数
+part: [{
+    part_id: 零件id,
+    count: 零件数量
+}...]      //  status = 4 时传此参数
+```
+#### 响应
+```json
+HTTP/1.1 200 OK
+Content-Type:application/json
+{
+    "code": 20000,
+    "msg": "更新成功"
+}
+```
+***
+***
+## 零件信息
+### 查询零件
+#### 请求
+```http
+GET /part
+```
+#### 参数
+```json
+limit: 查询条数
+page: 查询页数
+id: 零件id
+part_name: 零件名称     // 支持关键字查询
+type_id: 类别id
+```
+#### 响应
+```json
+{
+    "code": 20000,
+    "msg": "零件列表",
+    "data": [
+        {
+            "id": 4,
+            "part_name": "3mm螺丝",
+            "price": 1,
+            "type_id": 1,
+            "isDel": 0,
+            "count": 0,
+            "type_name": "螺丝"
+        },
+        {
+            "id": 5,
+            "part_name": "5mm螺丝",
+            "price": 2,
+            "type_id": 1,
+            "isDel": 0,
+            "count": 0,
+            "type_name": "螺丝"
+        }
+    ]
+}
+```
+***
+### 新增/修改/删除零件
+#### 请求
+```http
+POST /part
+```
+#### 参数
+```json
+id: 零件id
+part_name: 零件名称     // 支持关键字查询
+type_id: 类别id
+isDel: 删除     // 0:未删, 1: 已删
+price: 价格
+count: 剩余数量
+```
+#### 响应
+```json
+{
+    "code": 20000,
+    "msg": "零件列表",
+    "data": [
+        {
+            "id": 4,
+            "part_name": "3mm螺丝",
+            "price": 1,
+            "type_id": 1,
+            "isDel": 0,
+            "count": 0,
+            "type_name": "螺丝"
+        },
+        {
+            "id": 5,
+            "part_name": "5mm螺丝",
+            "price": 2,
+            "type_id": 1,
+            "isDel": 0,
+            "count": 0,
+            "type_name": "螺丝"
+        }
+    ]
+}
+```
+***

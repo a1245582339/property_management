@@ -23,9 +23,9 @@ exports.getRepair = async ctx => {
 }
 
 exports.creatRepair = async ctx =>  {
-    var data = ctx.request.body7
+    var data = ctx.request.body
     
-    let $createRepair = `insert into repair_list (title,status,photos,user_id,create_time) value ("${data.title}","1","${data.photos}","${data.user_id}","${(new Date()).getTime()}")`
+    let $createRepair = `insert into repair_list (title,status,photos,user_id,create_time) value ("${data.title}","1","${data.photos ? data.photos : ''}","${data.user_id}","${(new Date()).getTime()}")`
     await model.operateSql($createRepair).then(res => {
         ctx.body = {code: 20000, msg: '创建成功'}
     }).catch(err => {

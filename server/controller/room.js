@@ -1,8 +1,11 @@
 const model = require('../lib/mysql.js')
 
 exports.getRoom = async ctx => {
-    var id = ctx.request.query.id
-    let $selectRoom = `select * from room ${id ? 'where id=' + id : ''}`
+    var query = ctx.request.query
+    let whereStr = Object.keys(query).reduce((total, curr) => {
+        return [...total, `${curr}="${query[curr]}"`]
+    }, []).join(' and ')
+    let $selectRoom = `select * from room ${whereStr ? 'where ' + whereStr : ''}`
     await model.operateSql($selectRoom).then(res => {
         ctx.body =  {
             code: 2000,

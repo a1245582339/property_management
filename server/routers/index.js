@@ -22,7 +22,7 @@ router.get('/user/userInfo', user.getUserInfo)
 router.post('/user/userInfo', user.updateUser)
 router.get('/userList', user.getUserList)
 
-/* 家庭信息 */
+/* 家庭房屋信息 */
 router.get('/room', room.getRoom)
 
 /* 维修信息 */
