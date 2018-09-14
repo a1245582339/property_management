@@ -19,7 +19,7 @@ exports.login = async ctx => {
         })
     } else {
         ctx.body = {
-            code: -1,
+            code: 20003,
             msg: '用户名或密码错误'
         }
     }
