@@ -26,15 +26,20 @@ exports.login = async ctx => {
 }
 
 exports.getUserInfo = async ctx => {
+    console.log(ctx.request.query)
     let token = ctx.request.query.token
     let $selectStuId = `select user_id from user_token where token="${token}" and deadline>${(new Date()).getTime()}`
     try {
         var user_id = await model.operateSql($selectStuId)
+        if (!user_id.length) {
+            throw ''
+        }
     } catch (err) {
         ctx.body = {
             code: 20002,
             msg: 'token已失效'
         }
+        return false
     }
     
     let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[user_id.length - 1].user_id}`

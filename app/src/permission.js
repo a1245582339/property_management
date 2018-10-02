@@ -1,0 +1,43 @@
+import router from './router'
+import {
+    getToken,
+    removeToken
+} from './utils/auth'
+import store from './store'
+import Vue from 'vue'
+
+Vue.use(Toast)
+
+const whiteList = ['/login'] // 不重定向白名单
+
+router.beforeEach((to, from, next) => {
+    if (getToken() && getToken() != 'undefined') {
+        if (to.path === '/login') {
+            next({
+                path: '/room'
+            })
+        } else {
+            store.commit('SET_TOKEN', getToken())
+            store.dispatch('GET_INFO').then(() => {
+                next()
+            }).catch(err => {
+                Toast.$create({
+                    time: 1000,
+                    txt: err,
+                    type: 'error'
+                }).show()
+                removeToken()
+                next({
+                    path: '/login'
+                });
+            })
+        }
+    } else {
+        
+        if (whiteList.indexOf(to.path) !== -1) {
+            next();
+        } else {
+            next({path: '/login'});
+        }
+    }
+})

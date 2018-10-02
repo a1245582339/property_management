@@ -13,7 +13,7 @@ var cors = require('koa2-cors');
 
 const app = new Koa()
 
-// app.use(cors());  // 允许跨域
+app.use(cors());  // 允许跨域
 
 
 // session存储配置
