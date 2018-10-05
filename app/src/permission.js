@@ -3,6 +3,7 @@ import {
     getToken,
     removeToken
 } from './utils/auth'
+import { Toast } from 'vant';
 import store from './store'
 import Vue from 'vue'
 
@@ -21,11 +22,7 @@ router.beforeEach((to, from, next) => {
             store.dispatch('GET_INFO').then(() => {
                 next()
             }).catch(err => {
-                Toast.$create({
-                    time: 1000,
-                    txt: err,
-                    type: 'error'
-                }).show()
+                Toast.fail(err);
                 removeToken()
                 next({
                     path: '/login'

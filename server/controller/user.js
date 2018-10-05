@@ -26,7 +26,7 @@ exports.login = async ctx => {
 }
 
 exports.getUserInfo = async ctx => {
-    console.log(ctx.request.query)
+    // console.log(ctx.request.query)
     let token = ctx.request.query.token
     let $selectStuId = `select user_id from user_token where token="${token}" and deadline>${(new Date()).getTime()}`
     try {
@@ -44,11 +44,27 @@ exports.getUserInfo = async ctx => {
     
     let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[user_id.length - 1].user_id}`
     await model.operateSql($selectUserInfo).then(res => {
-        ctx.body = {
-            code: 20000,
-            msg: '用户信息',
-            data: {
-                user: res[0]
+        if(res[0].role == '0') {
+            ctx.body = {
+                code: 20000,
+                msg: '用户信息',
+                data: {
+                    user: {
+                        id: res[0].id,
+                        name: res[0].name,
+                        tel: res[0].tel,
+                        role: res[0].role,
+                        sex: res[0].sex
+                    }
+                }
+            }
+        } else {
+            ctx.body = {
+                code: 20000,
+                msg: '用户信息',
+                data: {
+                    user: res[0]
+                }
             }
         }
     }).catch(err => {
@@ -87,7 +103,7 @@ exports.updateUser = async ctx => {
     await model.operateSql($sql)
         .then(result => {
             ctx.body = {
-                code: 2000,
+                code: 20000,
                 msg: '更新成功'
             }
         }).catch(err => {
@@ -104,7 +120,7 @@ exports.getUserList = async ctx => {
     let whereStr = Object.keys(ctx.request.query).map(item => {
         return `${item}=${ctx.request.query[item]}`
     }).join(' and ')
-    let $selectUserList = `select * from user where isDel=0 ${whereStr ? ' and ' + whereStr : ''} limit ${limit} offset ${page * limit}`
+    let $selectUserList = `select id,name,nick_name,sex,room_id,role,tel from user where isDel=0 ${whereStr ? ' and ' + whereStr : ''} order by role desc limit ${limit} offset ${page * limit}`
     var findRoomPro = roomId => new Promise((resolve, reject) => {
         let $findRoom = `select * from room where id="${roomId}"`
         model.operateSql($findRoom).then(res => resolve(res)).catch(err => reject(err))
@@ -132,7 +148,7 @@ exports.getUserList = async ctx => {
 exports.checkPassword = async ctx => {
     var query = ctx.request.query
     try{
-        let $selectUser = `select password from admin_user where name="${query.name}"`
+        let $selectUser = `select password from user where name="${query.name}"`
         let password = await model.operateSql($selectUser)
         if (password[0].password == query.password) {
             ctx.body = {code: 20000, msg: '验证成功'}

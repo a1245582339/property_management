@@ -229,7 +229,7 @@ Content-Type:application/json
 
 #### 请求
 ```http
-POST /admin/userInfo
+POST /user/userInfo
 ```
 #### 参数
 ```json

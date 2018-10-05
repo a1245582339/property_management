@@ -36,5 +36,10 @@ export default new Router({
         component: () => import('./views/tab/Me')
       }]
     },
+    {
+      path: '/userDetail',
+      name: 'userDetail',
+      component:  () => import('./views/userDetail.vue'),
+    }
   ],
 });

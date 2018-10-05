@@ -72,7 +72,7 @@ exports.updateUser = async ctx => {
         let values = Object.values(user).map(item => `"${item}"`)
         $sql = `insert into admin_user (${Object.keys(user).toString()}) value (${values.toString()})`
     }
-    console.log($sql)
+    // console.log($sql)
     await model.operateSql($sql)
         .then(result => {
             ctx.body = {

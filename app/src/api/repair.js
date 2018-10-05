@@ -2,7 +2,7 @@ import http from './index';
 const domin  = '/repair';
 
 export const getRepair = query => {
-    return http.get(`${domin}`, {...query})
+    return http.get(`${domin}`, {params: query})
 }
 
 export const createRepair = data => {

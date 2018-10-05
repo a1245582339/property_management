@@ -1,9 +1,13 @@
 <template>
     <div>
 
-        <cube-input v-model="userName"></cube-input>
-        <cube-input v-model="password" type="password" :eye="false"></cube-input>
-        <cube-button @click="login">登录</cube-button>
+        <van-cell-group>
+            <van-field v-model="userName" required clearable label="用户名" icon="question" placeholder="请输入用户名"
+                @click-icon="$toast('question')" />
+
+            <van-field v-model="password" type="password" label="密码" placeholder="请输入密码" required />
+        </van-cell-group>
+        <van-button type="default" @click="login">登陆</van-button>
     </div>
 </template>
 
@@ -20,9 +24,14 @@
         password = '111111';
         login() {
             const vm = this;
-            this.$store.dispatch('LOGIN', {name: vm.userName, password: vm.password}).then(res => {
+            this.$store.dispatch('LOGIN', {
+                name: vm.userName,
+                password: vm.password
+            }).then(res => {
                 if (res.data.code == '20000') {
-                    vm.$router.push({name: 'room'})
+                    vm.$router.push({
+                        name: 'room'
+                    })
                 } else {
                     const toast = vm.$createToast({
                         time: 1000,
@@ -32,7 +41,7 @@
                     toast.show()
                 }
             });
-        }; 
+        };
         created() {
 
         }

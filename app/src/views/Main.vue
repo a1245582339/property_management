@@ -2,60 +2,49 @@
     <div>
         <router-view style="padding-bottom: 100px;" />
         <div id="nav">
-            <!-- <cube-tab-bar :showSlider="true" :useTransition="true" v-model="selectedLabelDefault" :data="tabs"
-                @change="changeHandler">
-                <cube-tab v-for="(item, index) in tabs" :label="item.label" :key="index">
-                    <i slot="icon" :class="`${item.icon} tab-icon`"></i>
-                    <p class="tab-name">{{item.label}}</p>
-                </cube-tab>
-            </cube-tab-bar> -->
+            <van-tabbar v-model="active">
+                <van-tabbar-item v-for="(item, index) in tabs" :key="index" :icon="item.icon" :to="{name: item.name}">{{item.label}}</van-tabbar-item>
+            </van-tabbar>
         </div>
     </div>
 </template>
 
 <script>
-    const tabMap = [{
-        label: '房屋',
-        name: 'room'
-    },{
-        label: '维修列表',
-        name: 'repair'
-    },{
-        label: '家庭成员',
-        name: 'homeUser'
-    },{
-        label: '个人信息',
-        name: 'me'
-    }]
     import {
         Component,
         Prop,
         Vue,
+        Watch
     } from 'vue-property-decorator';
     @Component
     export default class Main extends Vue {
-        selectedLabelDefault = '房屋';
+        active = 0;
         tabs = [{
             label: '房屋',
-            icon: 'cubeic-home',
+            icon: 'home',
+            name: 'room'
         }, {
             label: '维修列表',
-            icon: 'cubeic-like',
+            icon: 'setting',
+            name: 'repair'
         }, {
             label: '家庭成员',
-            icon: 'cubeic-vip',
+            icon: 'pending-orders',
+            name: 'homeUser'
         }, {
             label: '个人信息',
-            icon: 'cubeic-person',
+            icon: 'contact',
+            name: 'me'
         }];
-        changeHandler(label) {
-            let routeName = tabMap.find(item => item.label == label).name
-            this.$router.push({name: routeName})
-        };
         created() {
-            var vm = this
-            vm.selectedLabelDefault = tabMap.find(item => item.name == vm.$route.name).label
+            
         };
+        @Watch('$route', { immediate: true, deep: true })
+        watchRoute(newVal, oldVal) {
+            this.active = this.tabs.indexOf(this.tabs.find(item => {
+                return item.name == this.$route.name
+            }))
+        }
     }
 </script>
 

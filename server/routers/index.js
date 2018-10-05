@@ -31,6 +31,7 @@ router.get('/room', room.getRoom)
 router.get('/repair', repair.getRepair)
 router.post('/repair', repair.creatRepair)
 router.put('/repair', repair.updateRepair)
+router.post('/repairPhoto', repair.uploadImage)
 
 /* 零件 */
 router.get('/part', part.getPart)
