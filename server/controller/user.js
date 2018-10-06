@@ -115,12 +115,17 @@ exports.updateUser = async ctx => {
 }
 
 exports.getUserList = async ctx => {
-    let limit = ctx.request.query.limit || 10
+    var query = ctx.request.query
+    let limit = ctx.request.query.limit || 20
     let page = ctx.request.query.page || 0
-    let whereStr = Object.keys(ctx.request.query).map(item => {
-        return `${item}=${ctx.request.query[item]}`
-    }).join(' and ')
+    var whereStr = Object.keys(query).reduce((total, curr) => {
+        if (curr == 'page' || curr == 'limit') {
+            return total
+        }
+        return [...total, `${curr}="${query[curr]}"`]
+    }, []).join(' and ')
     let $selectUserList = `select id,name,nick_name,sex,room_id,role,tel from user where isDel=0 ${whereStr ? ' and ' + whereStr : ''} order by role desc limit ${limit} offset ${page * limit}`
+    console.log($selectUserList)
     var findRoomPro = roomId => new Promise((resolve, reject) => {
         let $findRoom = `select * from room where id="${roomId}"`
         model.operateSql($findRoom).then(res => resolve(res)).catch(err => reject(err))
@@ -137,6 +142,7 @@ exports.getUserList = async ctx => {
             }
         })
     }).catch(err => {
+        console.log(err)
         ctx.body = {
             code: -1,
             msg: '查询失败'

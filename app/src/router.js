@@ -39,7 +39,17 @@ export default new Router({
     {
       path: '/userDetail',
       name: 'userDetail',
-      component:  () => import('./views/userDetail.vue'),
+      component:  () => import('./views/userDetail'),
+    },
+    {
+      path: '/repairDetail',
+      name: 'repairDetail',
+      component:  () => import('./views/repairDetail'),
+    },
+    {
+      path: '/createRepair',
+      name: 'createRepair',
+      component:  () => import('./views/createRepair'),
     }
   ],
 });

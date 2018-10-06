@@ -7,7 +7,7 @@ const bodyParser = require('koa-bodyparser');
 const config = require('./config/default.js');
 // const router=require('koa-router')
 const views = require('koa-views')
-// const koaStatic = require('koa-static')
+const koaStatic = require('koa-static')
 const staticCache = require('koa-static-cache')
 var cors = require('koa2-cors');
 
@@ -32,9 +32,9 @@ app.use(cors());  // 允许跨域
 
 
 // 配置静态资源加载中间件
-// app.use(koaStatic(
-//   path.join(__dirname , './public')
-// ))
+app.use(koaStatic(
+  path.join(__dirname , './files')
+))
 // 缓存
 app.use(staticCache(path.join(__dirname, './public'), { dynamic: true }, {
   maxAge: 365 * 24 * 60 * 60

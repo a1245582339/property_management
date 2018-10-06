@@ -12,6 +12,7 @@
 </template>
 
 <script>
+    import { Toast } from 'vant';
     import {
         Component,
         Prop,
@@ -29,16 +30,12 @@
                 password: vm.password
             }).then(res => {
                 if (res.data.code == '20000') {
+                    Toast.success('登录成功')
                     vm.$router.push({
                         name: 'room'
                     })
                 } else {
-                    const toast = vm.$createToast({
-                        time: 1000,
-                        txt: res.data.msg,
-                        type: 'error'
-                    })
-                    toast.show()
+                    Toast.fail(res.data.msg)
                 }
             });
         };

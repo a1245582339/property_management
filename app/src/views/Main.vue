@@ -24,7 +24,7 @@
             icon: 'home',
             name: 'room'
         }, {
-            label: '维修列表',
+            label: '报修列表',
             icon: 'setting',
             name: 'repair'
         }, {

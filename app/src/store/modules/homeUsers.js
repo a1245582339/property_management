@@ -5,12 +5,15 @@ import {
 } from '@/api/homeUsers';
 const homeUsers = {
     state: {
-        homeUsers:[]
+        list:[]
     },
 
     mutations: {
         SET_HOME_USERS: (state, list) => {
-            state.homeUsers = list
+            state.list = list
+        },
+        SET_MORE_LIST: (state, list) => {
+            state.list.push(...list)
         }
     },
 
@@ -21,10 +24,16 @@ const homeUsers = {
             try {
                 const res = await getHomeUsers(query)
                 if (res.data.code == '20000') {
-                    commit('SET_HOME_USERS', res.data.data)
+                    if (query.page == 0) {
+                        commit('SET_HOME_USERS', res.data.data)
+                    } else {
+                        commit('SET_MORE_LIST', res.data.data)
+                    }
+                    return res
                 } else {
                     throw res.data.msg
                 }
+                return res
             } catch (err) {
                 throw err
             }
