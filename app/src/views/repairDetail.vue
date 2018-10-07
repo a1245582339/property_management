@@ -61,10 +61,9 @@
         }];
         repairInfo = {};
         photos = [];
-        baseURL = window.location.protocol + '//' + window.location.hostname;
         onClickLeft() {
             this.$router.push({
-                path: '/repair'
+                name: 'repair'
             })
         };
         onClickRight() {
@@ -114,17 +113,17 @@
         created() {
             this.repairInfo = this.$route.params
             if (this.repairInfo.photos) {
-            this.photos = JSON.parse(this.repairInfo.photos).map(item => this.baseURL + ':3000' + item)
-
+                this.photos = JSON.parse(this.repairInfo.photos)
             }
         };
     }
 </script>
 <style lang="scss" scoped>
-.photo {
+    .photo {
         position: relative;
         display: inline-block;
         margin-right: 3px;
+
         img {
             width: 40px;
             height: 40px;

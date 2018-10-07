@@ -1,4 +1,6 @@
 module.exports = {
+  baseUrl: './',
+  assetsDir: './',
   lintOnSave: false,
   css: {
     loaderOptions: {

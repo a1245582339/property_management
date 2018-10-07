@@ -11,7 +11,7 @@
             <van-cell title="角色" :value="roleMap.find(i => i.role == userInfo.role).text" />
         </van-cell-group>
 
-        <van-button style="width: 90%; postition: absolute; left: 50%; transform: translate(-50%, 20px)" v-if="$store.state.user.role == 2 && userInfo.role == 0" type="danger" size="large" @click="checkUser">通过审核</van-button>
+        <van-button type="danger" style="width: 90%; postition: absolute; left: 50%; transform: translate(-50%, 20px)" v-if="$store.state.user.role == 2 && userInfo.role == 0" size="large" @click="checkUser">通过审核</van-button>
     </div>
 </template>
 <script>
@@ -39,7 +39,7 @@
         userInfo = {};
         onClickLeft() {
             this.$router.push({
-                path: '/homeUser'
+                name: 'homeUser'
             })
         };
         onClickRight() {
@@ -50,7 +50,7 @@
                 await this.$store.dispatch('DEL_USER', this.userInfo.id)
                 Toast.success('删除成功');
                 this.$router.push({
-                    path: '/homeUser'
+                    name: 'homeUser'
                 })
             }).catch(() => {
                 Toast('已取消');
@@ -65,7 +65,7 @@
                 await this.$store.dispatch('CHECK_USER', this.userInfo.id)
                 Toast.success('审核成功');
                 this.$router.push({
-                    path: '/homeUser'
+                    name: 'homeUser'
                 })
             }).catch(() => {
                 Toast('已取消');

@@ -6,32 +6,37 @@ Vue.use(Router);
 
 export default new Router({
   routes: [
-    { path: '/', redirect: '/room' },
+    { path: '/', redirect: '/main' },
     {
       path: '/login',
       name: 'login',
       component: Login,
     },
     {
+      path: '/register',
+      name: 'register',
+      component: () => import('./views/Register'),
+    },
+    {
       path: '/main',
-      component: () => import('./views/Main.vue'),
+      component: () => import('./views/Main'),
       children: [{
         path: '/', 
-        redirect: '/room'
+        redirect: '/main/room'
       },{
-        path: '/room',
+        path: 'room',
         name: 'room',
         component: () => import('./views/tab/Room')
       },{
-        path: '/repair',
+        path: 'repair',
         name: 'repair',
         component: () => import('./views/tab/Repair')
       },{
-        path: '/homeUser',
+        path: 'homeUser',
         name: 'homeUser',
         component: () => import('./views/tab/HomeUser')
       },{
-        path: '/me',
+        path: 'me',
         name: 'me',
         component: () => import('./views/tab/Me')
       }]

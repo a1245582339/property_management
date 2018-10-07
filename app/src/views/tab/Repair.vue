@@ -2,25 +2,30 @@
     <div>
         <van-nav-bar title="报修列表" right-text="添加" @click-right="onClickRight">
         </van-nav-bar>
-        <van-search v-model="searchWord" placeholder="请输入搜索关键词" show-action @search="onSearch">
-            <div slot="action" @click="onSearch">搜索</div>
-        </van-search>
-        <div>
-            <no-data v-if="repairList.length == 0" />
-            <van-list v-else v-model="Listloading" :finished="finished" @load="onLoad">
-                <van-card v-for="(item, index) in repairList" :key="index" tag="标签" :price="item.price || '暂无报价'" :desc="statusMap.find(i => i.status == item.status ).text"
-                    :title="item.title" :thumb="item.photos ? baseURL + ':3000' + JSON.parse(item.photos)[0] : defaultImg">
-                    <div slot="footer">
-                        <van-button size="mini" @click="$router.push({name: 'repairDetail', params: item})">查看详情</van-button>
-                        <van-button v-if="item.status == 4" size="mini" type="danger" @click="pay(item.id, item.price)">缴费</van-button>
-                    </div>
-                </van-card>
-            </van-list>
+        <no-permission v-if="$store.state.user.role == 0" />
+        <div v-else>
+            <van-search v-model="searchWord" placeholder="请输入搜索关键词" show-action @search="onSearch">
+                <div slot="action" @click="onSearch">搜索</div>
+            </van-search>
+            <div>
+                <no-data v-if="repairList.length == 0" />
+                <van-list v-else v-model="Listloading" :finished="finished" @load="onLoad">
+                    <van-card v-for="(item, index) in repairList" :key="index" tag="标签" :price="item.price || '暂无报价'"
+                        :desc="statusMap.find(i => i.status == item.status ).text" :title="item.title" :thumb="item.photos && item.photos.length != 0 ? JSON.parse(item.photos)[0] : defaultImg">
+                        <div slot="footer">
+                            <van-button size="mini" @click="$router.push({name: 'repairDetail', params: item})">查看详情</van-button>
+                            <van-button v-if="item.status == 4" size="mini" type="danger" @click="pay(item.id, item.price)">缴费</van-button>
+                        </div>
+                    </van-card>
+                </van-list>
+            </div>
         </div>
+
     </div>
 </template>
 <script>
     import noData from '@/components/noData'
+    import noPermission from '@/components/noPermission'
     import {
         Toast,
         Dialog
@@ -36,7 +41,8 @@
     } from '@/api/repair'
     @Component({
         components: {
-            noData
+            noData,
+            noPermission
         }
     })
     export default class Main extends Vue {
@@ -62,18 +68,17 @@
         Listloading = false;
         finished = false;
         searchWord = '';
-        baseURL = window.location.protocol + '//' + window.location.hostname;
         repairList = this.$store.state.repair.list;
         page = 0;
         defaultImg = require('@/assets/noPhoto.png');
         async fetchData() {
             const vm = this
             var res = await this.$store.dispatch('GET_REPAIR', {
-                user_id: vm.$store.state.user.id,
+                room_id: vm.$store.state.user.room_id,
                 title: vm.searchWord,
                 page: vm.page
             })
-            this.page ++
+            this.page++
             if (res.data.data.length < 10) {
                 vm.finished = true
                 vm.Listloading = false
@@ -84,7 +89,7 @@
         };
         onClickRight() {
             this.$router.push({
-                path: '/createRepair' 
+                path: '/createRepair'
             })
         };
         onSearch() {
@@ -112,14 +117,17 @@
             this.fetchData()
         };
         mounted() {
-            Toast.loading({
-                mask: true,
-                duration: 0,
-                message: '加载中...'
-            });
-            this.$nextTick(() => {
-                this.fetchData()
-            })
+            if (this.$store.state.user.role != 0) {
+                Toast.loading({
+                    mask: true,
+                    duration: 0,
+                    message: '加载中...'
+                });
+                this.$nextTick(() => {
+                    this.fetchData()
+                })
+            }
+
         }
 
     }

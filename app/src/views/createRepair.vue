@@ -12,7 +12,7 @@
                     <van-icon class="del" color="#ff4444" size="15px" name="clear" @click="delPhoto(index)" />
                     <img :src="item" alt="" @click="preview(index)">
                 </div>
-                <van-uploader :after-read="onRead" multiple>
+                <van-uploader :after-read="onRead" multiple :max-size="307200" :oversize="oversize">
                     <van-icon name="photograph" />
                 </van-uploader>
             </van-cell>
@@ -21,6 +21,7 @@
 </template>
 <script>
     import {
+        Toast,
         ImagePreview
     } from 'vant';
     import {
@@ -37,26 +38,39 @@
         photoPath = [];
         onClickLeft() {
             this.$router.push({
-                path: '/repair'
+                name: 'repair'
             })
         };
         async onClickRight() {
+            Toast.loading({
+                mask: true,
+                duration: 0,
+                message: '提交中...'
+            });
+            
             await this.$store.dispatch('CREATE_REPAIR', {
                 title: this.title,
                 photos: JSON.stringify(this.photoPath),
                 user_id: this.$store.state.user.id
             })
+            Toast.clear()
             this.$router.push({
-                path: '/repair'
+                name: 'repair'
             })
         };
-        async onRead(file) {
+        oversize(file) {
+            alert(JSON.stringify(file))
+            Toast.fail('照片大小超出限制！最大可上传300KB照片')
+        };
+        async onRead(file, content) {
             if (file.content) {
                 this.photo.push(file.content)
             } else {
                 this.photo = [...this.photo, ...(file.map(item => item.content))]
             }
+            // Toast(JSON.stringify(this.photo))
             this.photoPath = (await uploadImage(this.photo)).data.data.path
+            // Toast(JSON.stringify(await uploadImage(this.photo)))
         };
         preview(index) {
             ImagePreview({

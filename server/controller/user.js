@@ -1,5 +1,4 @@
 const model = require('../lib/mysql.js')
-const moment = require('moment')
 
 exports.login = async ctx => {
     let data = ctx.request.body
@@ -42,16 +41,20 @@ exports.getUserInfo = async ctx => {
         return false
     }
     
-    let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[user_id.length - 1].user_id}`
+    let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[0].user_id}`
     await model.operateSql($selectUserInfo).then(res => {
+        res[0].id = user_id[0].user_id
         if(res[0].role == '0') {
+            
             ctx.body = {
                 code: 20000,
                 msg: '用户信息',
                 data: {
                     user: {
                         id: res[0].id,
+                        password: res[0].password,
                         name: res[0].name,
+                        nick_name: res[0].nick_name,
                         tel: res[0].tel,
                         role: res[0].role,
                         sex: res[0].sex

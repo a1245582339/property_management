@@ -1,4 +1,4 @@
-import { setToken } from '@/utils/auth';
+import { setToken, removeToken } from '@/utils/auth';
 import { login, getUserInfo, updateUserInfo, checkPassword } from '@/api/user';
                             
 const user = {
@@ -24,6 +24,13 @@ const user = {
                     setToken(res.data.data.token);
                 }
                 return res
+            } catch (err) {
+                console.log(err);
+            }
+        },
+        async LOG_OUT() {
+            try {
+                removeToken();
             } catch (err) {
                 console.log(err);
             }

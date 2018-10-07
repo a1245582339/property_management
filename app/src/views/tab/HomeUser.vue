@@ -2,14 +2,16 @@
     <div>
         <van-nav-bar title="家庭成员">
         </van-nav-bar>
-         <van-list v-model="Listloading" :finished="finished" @load="onLoad">
+        <no-permission v-if="$store.state.user.role == 0" />
+         <van-list v-else v-model="Listloading" :finished="finished" @load="onLoad">
             <van-cell v-for="(item, index) in homeUsers" :key="index" :title="item.nick_name || item.name" is-link
                 :value="roleMap.find(i => i.role == item.role).text"
-                :to="item.name == $store.state.user.name ? {path: '/me'} : {path: '/userDetail', query: item}" />
+                :to="item.name == $store.state.user.name ? {name: 'me'} : {path: '/userDetail', query: item}" />
         </van-list>
     </div>
 </template>
 <script>
+    import noPermission from '@/components/noPermission'
     import {
         Toast
     } from 'vant';
@@ -18,7 +20,11 @@
         Prop,
         Vue,
     } from 'vue-property-decorator';
-    @Component
+    @Component({
+        components: {
+            noPermission
+        }
+    })
     export default class Main extends Vue {
         roleMap = [{
             role: 0,
@@ -53,12 +59,15 @@
             this.fetchData()
         };
         created() {
-            Toast.loading({
+            if (this.$store.state.user.role != 0) {
+                Toast.loading({
                 mask: true,
                 duration: 0,
                 message: '加载中...'
             });
             this.fetchData()
+            }
+            
         };
     }
 </script>
