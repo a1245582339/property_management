@@ -52,14 +52,17 @@ export const getMenuByRouter = (list, access) => {
  * @param {Array} routeMetched 当前路由metched
  * @returns {Array}
  */
-export const getBreadCrumbList = (routeMetched, homeRoute) => {
+export const getBreadCrumbList = (route, homeRoute) => {
+  let routeMetched = route.matched
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hide
   }).map(item => {
+    let meta = {...item.meta}
+    if (meta.title && typeof meta.title === 'function') meta.title = meta.title(route)
     let obj = {
       icon: (item.meta && item.meta.icon) || '',
       name: item.name,
-      meta: item.meta
+      meta: meta
     }
     return obj
   })
@@ -67,6 +70,14 @@ export const getBreadCrumbList = (routeMetched, homeRoute) => {
     return !item.meta.hideInMenu
   })
   return [Object.assign(homeRoute, { to: homeRoute.path }), ...res]
+}
+
+export const getRouteTitleHandled = route => {
+  let router = {...route}
+  let meta = {...route.meta}
+  if (meta.title && typeof meta.title === 'function') meta.title = meta.title(router)
+  router.meta = meta
+  return router
 }
 
 export const showTitle = (item, vm) => vm.$config.useI18n ? vm.$t(item.name) : ((item.meta && item.meta.title) || item.name)
@@ -172,6 +183,7 @@ export const getNextRoute = (list, route) => {
     res = getHomeRoute(list)
   } else {
     const index = list.findIndex(item => routeEqual(item, route))
+    console.log(route, index, list.length)
     if (index === list.length - 1) res = list[list.length - 2]
     else res = list[index + 1]
   }
@@ -251,6 +263,18 @@ export const findNodeUpper = (ele, tag) => {
       return ele.parentNode
     } else {
       return findNodeUpper(ele.parentNode, tag)
+    }
+  }
+}
+
+export const findNodeUpperByClasses = (ele, classes) => {
+  let parentNode = ele.parentNode
+  if (parentNode) {
+    let classList = parentNode.classList
+    if (classList && classes.every(className => classList.contains(className))) {
+      return parentNode
+    } else {
+      return findNodeUpperByClasses(parentNode, classes)
     }
   }
 }
