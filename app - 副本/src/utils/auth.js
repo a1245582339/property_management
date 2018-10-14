@@ -1,13 +1,13 @@
 import cookies from 'js-cookie'
 
-const TokenKey = 'App-Token'
+const TokenKey = 'Admin-Token'
 
 export function getToken() {
   return cookies.get(TokenKey);
 }
 
 export function setToken(token) {
-  return cookies.set(TokenKey, token, { expires: 30 });
+  return cookies.set(TokenKey, token);
 }
 
 export function removeToken() {
