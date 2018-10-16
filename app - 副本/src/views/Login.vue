@@ -1,22 +1,11 @@
 <template>
-    <!-- <div class="wrap">
-        <p>物业系统APP</p>
-        <van-cell-group class="form">
-            <van-field v-model="userName" required clearable label="用户名" placeholder="请输入用户名"/>
-            <van-field v-model="password" type="password" label="密码" placeholder="请输入密码" required />
-        </van-cell-group>
-        <van-button style="margin-top: 30px; width: 90%; left: 50%; transform: translate(-50%, 0)" @click="login">登陆</van-button>
-        <span>
-            <router-link style="text-decoration: underline #fff" :to="{path: '/register'}">点此注册</router-link>
-        </span>
-    </div> -->
     <div class="login">
         <div class="login-con">
             <Card icon="log-in" title="欢迎登录" :bordered="false">
                 <div class="form-con">
                     <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="login">
                         <FormItem prop="userName">
-                            <Input v-model="form.userName" placeholder="请输入用户名">
+                            <Input type="text" v-model="form.userName" placeholder="请输入用户名">
                             <span slot="prepend">
                                 <Icon :size="16" type="ios-person"></Icon>
                             </span>
@@ -30,7 +19,7 @@
                             </Input>
                         </FormItem>
                         <FormItem>
-                            <Button @click="login" type="primary" long>登录</Button>
+                            <Button type="primary" @click="login" long>登录</Button>
                         </FormItem>
                     </Form>
                 </div>
@@ -72,13 +61,13 @@
         login() {
             const vm = this;
             this.$store.dispatch('LOGIN', {
-                name: vm.userName,
-                password: md5(vm.password)
+                name: vm.form.userName,
+                password: md5(vm.form.password)
             }).then(res => {
                 if (res.data.code == '20000') {
                     Toast.success('登录成功')
                     vm.$router.push({
-                        path: '/main/room'
+                        path: '/'
                     })
                 } else {
                     Toast.fail(res.data.msg)

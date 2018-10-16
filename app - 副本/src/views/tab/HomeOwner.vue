@@ -1,6 +1,6 @@
 <template>
     <div class="wrap">
-        <Table class="table" border :columns="columns" :data="roomList"></Table>
+        <Table class="table" border :columns="columns" :data="userList"></Table>
         <Spin size="large" fix v-if="spinShow"></Spin>
     </div>
 </template>
@@ -14,7 +14,7 @@
         Vue,
     } from 'vue-property-decorator';
     @Component()
-    export default class Main extends Vue {
+    export default class HomeOwner extends Vue {
         columns = [{
                 title: '楼号',
                 key: 'building',
@@ -51,7 +51,7 @@
                 }
             }
         ];
-        roomList = [];
+        userList = [];
         spinShow = true;
         show(index) {
             this.$Modal.info({
