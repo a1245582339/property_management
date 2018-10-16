@@ -4,13 +4,13 @@
             <CellGroup>
                 <Cell title="用户名" :extra="userInfo.name" />
                 <Cell title="角色" :extra="roleMap.find(i => i.role == userInfo.role).text" />
-                <Cell title="密码" :extra="userInfo.password | passwordHide" @click.native="passwordModal = true" />
+                <Cell title="密码" :extra="userInfo.password | passwordHide" @click.native="modalShow" />
             </CellGroup>
         </Card>
 
-        <Modal v-model="passwordModal" title="修改密码" @on-ok="beforeClose" @on-cancel="beforeClose">
+        <Modal v-model="passwordModal" title="修改密码" :footer-hide="true" @on-visible-change="visibleChange">
             <Form ref="Form" :model="form" :rules="loginForm" @keydown.enter.native="login">
-                <FormItem>
+                <FormItem prop="oldPassword">
                     <Input type="text" v-model="form.oldPassword" placeholder="请输入原密码">
                     <span slot="prepend">
                         <Icon :size="14" type="md-lock"></Icon>
@@ -18,14 +18,14 @@
                     <Button slot="append" type="primary" @click="checkPassword">验证</Button>
                     </Input>
                 </FormItem>
-                <FormItem prop="password">
+                <FormItem prop="newPassword">
                     <Input type="password" v-model="form.newPassword" placeholder="请输入新密码" :disabled="!passwordCorrect">
                     <span slot="prepend">
                         <Icon :size="14" type="md-lock"></Icon>
                     </span>
                     </Input>
                 </FormItem>
-                <FormItem prop="passwordCheck">
+                <FormItem prop="repeatPassword">
                     <Input type="password" v-model="form.repeatPassword" placeholder="请重新输入新密码" :disabled="!passwordCorrect">
                     <span slot="prepend">
                         <Icon :size="14" type="md-lock"></Icon>
@@ -33,15 +33,16 @@
 
                     </Input>
                 </FormItem>
+                <FormItem style="text-align: right;">
+                    <Button size="large" type="text" @click="reset">取消</Button>
+                    <Button size="large" type="primary" style="margin-left: 8px" @click="submit">确认</Button>
+                </FormItem>
             </Form>
         </Modal>
     </div>
 </template>
 <script>
     import md5 from 'js-md5'
-    import {
-        Toast
-    } from 'vant';
     import {
         Component,
         Prop,
@@ -71,26 +72,28 @@
         userInfo = { ...this.$store.state.user
         };
         loginForm = {
-            password: [{
+            newPassword: [{
                 validator: (rule, value, callback) => {
+                    let val = this.form.newPassword
                     if (value === '') {
-                        callback(new Error('Please enter your password'));
-                    } else {
-                        if (this.form.repeatPassword !== '') {
-                            // 对第二个密码框单独验证
-                            this.$refs.Form.validateField('passwordCheck');
-                        }
-                        callback();
+                        callback(new Error('请输入密码！'));
+                    } else if (!/^[a-zA-Z]\w{5,17}$/.test(val)) {
+
+                        callback(new Error('以字母开头，长度在6~18之间，只能包含字母、数字和下划线！'));
+                    } else if (this.form.repeatPassword !== '') {
+                        this.$refs['Form'].validateField('repeatPassword');
                     }
+                    callback();
                 },
                 trigger: 'blur'
             }],
-            passwordCheck: [{
+            repeatPassword: [{
                 validator: (rule, value, callback) => {
-                    if (value === '') {
-                        callback(new Error('Please enter your password again'));
-                    } else if (value !== this.form.password) {
-                        callback(new Error('The two input passwords do not match!'));
+                    let val = this.form.repeatPassword
+                    if (val === '') {
+                        callback(new Error('请重新输入密码！'));
+                    } else if (val !== this.form.newPassword) {
+                        callback(new Error('两次密码不一致！'));
                     } else {
                         callback();
                     }
@@ -105,42 +108,43 @@
         }
         passwordModal = false;
         passwordCorrect = false;
-
-        async onClickRight() {
-            if (/^1[34578]\d{9}$/.test(this.userInfo.tel)) {
-                Toast.success(await this.$store.dispatch('UPDATE_INFO', this.userInfo));
-            } else {
-                return false
-            }
-        };
+        modalShow() {
+            this.passwordModal = true;
+        }
+        visibleChange() {
+            this.reset()
+        }
         async checkPassword() {
             let res = await this.$store.dispatch('CHECK_PASSWORD', md5(this.form.oldPassword))
             if (res.code == '20000') {
                 this.passwordCorrect = true
-                Toast.success(res.msg);
+                this.$Message.success(res.msg);
             } else {
                 this.passwordCorrect = false
-                Toast.fail(res.msg);
+                this.$Message.error(res.msg);
             }
 
         }
-        async beforeClose(action, done) {
-            if (action === 'confirm') {
-                if (/^[a-zA-Z]\w{5,17}$/.test(this.newPassword)) {
-                    if (this.newPassword == this.repeatPassword) {
-                        this.userInfo.password = md5(this.newPassword)
-                        Toast.success(await this.$store.dispatch('UPDATE_INFO', this.userInfo)); ///^[a-zA-Z]\w{5,17}$/.test(this.newPassword)
-                        done();
-                    } else {
-                        Toast.fail('两次输入密码不一致！');
-                        done(false);
-                    }
+        reset() {
+            this.$refs['Form'].resetFields()
+        }
+        submit() {
+            const vm = this
+            if (!this.passwordCorrect) {
+                this.$Message.error('请先验证密码！');
+                return
+            }
+
+            this.$refs['Form'].validate(async (valid) => {
+                if (valid) {
+                    vm.userInfo.password = md5(vm.form.newPassword)
+                    this.$Message.success(await vm.$store.dispatch('UPDATE_INFO', vm.userInfo))
+                    vm.reset()
+                    this.passwordModal = false
                 } else {
-                    Toast.fail('密码须以字母开头，长度在6~18之间，只能包含字母、数字和下划线');
+                    this.$Message.error('请输入正确密码');
                 }
-
-
-            } else {}
+            })
         }
         async logOut() {
             await this.$store.dispatch('LOG_OUT')
