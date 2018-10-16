@@ -14,7 +14,7 @@
                 <Icon type="ios-people" />
                 用户管理
             </template>
-            <MenuItem name="HomeOwner"><Icon type="md-contact" /><span>业主管理</span></MenuItem>
+            <MenuItem name="HomeOwner" :to="{name: 'HomeOwner'}"><Icon type="md-contact" /><span>业主管理</span></MenuItem>
             <MenuItem name="HomeUser"><Icon type="md-contacts" /><span>家庭成员管理</span></MenuItem>
         </Submenu>
         <MenuItem name="Repair" :to="{name: 'Repair'}">

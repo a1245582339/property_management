@@ -127,7 +127,7 @@ exports.getUserList = async ctx => {
         }
         return [...total, `${curr}="${query[curr]}"`]
     }, []).join(' and ')
-    let $selectUserList = `select id,name,nick_name,sex,room_id,role,tel from user where isDel=0 ${whereStr ? ' and ' + whereStr : ''} order by role desc limit ${limit} offset ${page * limit}`
+    let $selectUserList = `select user.id,user.name,user.nick_name,user.sex,user.room_id,user.role,user.tel,room.building,room.room_num from user left join room on user.room_id=room.id where isDel=0 ${whereStr ? ' and ' + whereStr : ''} order by role desc limit ${limit} offset ${page * limit}`
     console.log($selectUserList)
     var findRoomPro = roomId => new Promise((resolve, reject) => {
         let $findRoom = `select * from room where id="${roomId}"`

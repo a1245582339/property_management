@@ -38,6 +38,11 @@ export default new Router({
           title: '维修信息'
         }
       }, {
+        path: 'homeOwner',
+        name: 'HomeOwner',
+        component: () =>
+          import('./views/tab/HomeOwner')
+      },{
         path: 'homeUser',
         name: 'homeUser',
         component: () =>
