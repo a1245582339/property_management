@@ -1,31 +1,81 @@
 <template>
-    <div>
-        <van-nav-bar title="房屋信息">
-        </van-nav-bar>
-        <no-permission v-if="$store.state.user.role == 0" />
-        <van-cell-group v-else>
-            <van-cell title="楼号" :value="userInfo.building + '号楼'" />
-            <van-cell title="房间号" :value="userInfo.room_num + '室'" />
-            <van-cell title="面积" :value="userInfo.area + '平米'" />
-        </van-cell-group>
+    <div class="wrap">
+        <Table class="table" border :columns="columns" :data="roomList"></Table>
+
     </div>
 </template>
 <script>
-    import noPermission from '@/components/noPermission'
+    import {
+        getRoom
+    } from '@/api/room'
     import {
         Component,
         Prop,
         Vue,
     } from 'vue-property-decorator';
-    @Component({
-        components: {
-            noPermission
-        }
-    })
+    @Component()
     export default class Main extends Vue {
-        userInfo = this.$store.state.user;
+        columns = [{
+                title: '楼号',
+                key: 'building',
+                filters: [],
+                filterMultiple: false,
+                filterMethod(value, row) {
+                    return row.building == value
+                }
+            },
+            {
+                title: '房间号',
+                key: 'room_num'
+            },
+            {
+                title: '业主',
+                key: 'name',
+                render: (h, params) => {
+                    return params.row.name ? h('div', params.row.name) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                }
+            },
+            {
+                title: '业主电话',
+                key: 'tel',
+                render: (h, params) => {
+                    return params.row.tel ? h('div', params.row.tel) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                }
+            }
+        ];
+        roomList = [];
+        show(index) {
+            this.$Modal.info({
+                title: 'User Info',
+                content: `Name：${this.data6[index].name}<br>Age：${this.data6[index].age}<br>Address：${this.data6[index].address}`
+            })
+        };
+        remove(index) {
+            this.data6.splice(index, 1);
+        }
+        async fetchData() {
+            const res = await getRoom()
+            this.roomList = res.data.data
+            this.columns[0].filters = res.data.data.reduce((total, curr) => {
+                return total.find(item => curr.building == item.label) ? total : [...total, {label: curr.building, value: curr.building}]
+            }, [])
+        };
+        created() {
+            this.fetchData()
+        }
     }
 </script>
 <style lang="scss" scoped>
-
+.wrap {
+    width: 95%;
+    margin: 50px auto
+}
 </style>

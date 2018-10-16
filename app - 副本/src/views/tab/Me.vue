@@ -1,27 +1,40 @@
 <template>
     <div>
-        <van-nav-bar title="个人信息" @click-right="onClickRight">
-            <span :style="{color: /^1[34578]\d{9}$/.test(userInfo.tel) ? '#3388ff' : '#8e9bbd'}" slot="right">更改</span>
-        </van-nav-bar>
-        <van-cell-group>
-            <van-field label="用户名" v-model="userInfo.name" disabled />
-            <van-field label="角色" v-model="roleMap.find(i => i.role == userInfo.role).text" disabled />
-            <van-field label="密码" v-model="userInfo.password" type='password' disabled>
-                <van-button slot="button" size="small" type="primary" @click="dialogShow = true">修改密码</van-button>
-            </van-field>
-            <van-field label="昵称" v-model="userInfo.nick_name" placeholder="请输入昵称" />
-            <van-field required label="手机号" v-model="userInfo.tel" placeholder="请输入手机号" :error-message="/^1[34578]\d{9}$/.test(userInfo.tel) ? '' : '手机号格式错误'" />
-        </van-cell-group>
-        <van-button type="danger" style="width: 90%; postition: absolute; left: 50%; transform: translate(-50%, 20px)"
-            @click="logOut">退出登录</van-button>
-        <van-dialog v-model="dialogShow" show-cancel-button close-on-click-overlay :before-close="beforeClose">
-            <van-field v-model="oldPassword" type="password" label="原密码" placeholder="请输入原密码">
-                <van-button style="position: relative; right: 20px" slot="button" size="mini" type="primary" @click="checkPassword">验证</van-button>
-            </van-field>
-            <van-field v-model="newPassword" type="password" label="新密码" placeholder="请输入新密码" :disabled="!passwordCorrect"
-                :error-message="/^[a-zA-Z]\w{5,17}$/.test(newPassword) ? '' : '以字母开头，长度在6~18之间，只能包含字母、数字和下划线'" />
-            <van-field v-model="repeatPassword" type="password" label="新密码" placeholder="请重新输入密码" :disabled="!passwordCorrect" />
-        </van-dialog>
+        <Card style="">
+            <CellGroup>
+                <Cell title="用户名" :extra="userInfo.name" />
+                <Cell title="角色" :extra="roleMap.find(i => i.role == userInfo.role).text" />
+                <Cell title="密码" :extra="userInfo.password | passwordHide" @click.native="passwordModal = true" />
+            </CellGroup>
+        </Card>
+
+        <Modal v-model="passwordModal" title="修改密码" @on-ok="beforeClose" @on-cancel="beforeClose">
+            <Form ref="Form" :model="form" :rules="loginForm" @keydown.enter.native="login">
+                <FormItem>
+                    <Input type="text" v-model="form.oldPassword" placeholder="请输入原密码">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    <Button slot="append" type="primary" @click="checkPassword">验证</Button>
+                    </Input>
+                </FormItem>
+                <FormItem prop="password">
+                    <Input type="password" v-model="form.newPassword" placeholder="请输入新密码" :disabled="!passwordCorrect">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem prop="passwordCheck">
+                    <Input type="password" v-model="form.repeatPassword" placeholder="请重新输入新密码" :disabled="!passwordCorrect">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+
+                    </Input>
+                </FormItem>
+            </Form>
+        </Modal>
     </div>
 </template>
 <script>
@@ -34,25 +47,65 @@
         Prop,
         Vue,
     } from 'vue-property-decorator';
-    @Component
+    @Component({
+        filters: {
+            passwordHide(password) {
+                let str = ''
+                for (let i = 0; i < password.length; i++) {
+                    str += '●'
+                }
+                return str
+            }
+        }
+    })
+
     export default class Main extends Vue {
+
         roleMap = [{
-            role: 0,
-            text: '未审核'
-        }, {
             role: 1,
-            text: '家庭成员'
+            text: '超级管理员'
         }, {
             role: 2,
-            text: '业主'
+            text: '管理员'
         }];
         userInfo = { ...this.$store.state.user
         };
-        dialogShow = false;
-        oldPassword = '';
+        loginForm = {
+            password: [{
+                validator: (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('Please enter your password'));
+                    } else {
+                        if (this.form.repeatPassword !== '') {
+                            // 对第二个密码框单独验证
+                            this.$refs.Form.validateField('passwordCheck');
+                        }
+                        callback();
+                    }
+                },
+                trigger: 'blur'
+            }],
+            passwordCheck: [{
+                validator: (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('Please enter your password again'));
+                    } else if (value !== this.form.password) {
+                        callback(new Error('The two input passwords do not match!'));
+                    } else {
+                        callback();
+                    }
+                },
+                trigger: 'blur'
+            }],
+        }
+        form = {
+            oldPassword: '',
+            newPassword: '',
+            repeatPassword: '',
+        }
+        passwordModal = false;
         passwordCorrect = false;
-        newPassword = '';
-        repeatPassword = '';
+
         async onClickRight() {
             if (/^1[34578]\d{9}$/.test(this.userInfo.tel)) {
                 Toast.success(await this.$store.dispatch('UPDATE_INFO', this.userInfo));
@@ -61,7 +114,7 @@
             }
         };
         async checkPassword() {
-            let res = await this.$store.dispatch('CHECK_PASSWORD', md5(this.oldPassword))
+            let res = await this.$store.dispatch('CHECK_PASSWORD', md5(this.form.oldPassword))
             if (res.code == '20000') {
                 this.passwordCorrect = true
                 Toast.success(res.msg);
@@ -87,9 +140,7 @@
                 }
 
 
-            } else {
-                done();
-            }
+            } else {}
         }
         async logOut() {
             await this.$store.dispatch('LOG_OUT')
