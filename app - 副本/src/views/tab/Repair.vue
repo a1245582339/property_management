@@ -1,137 +1,230 @@
 <template>
     <div>
-        <van-nav-bar title="报修列表" right-text="添加" @click-right="onClickRight">
-        </van-nav-bar>
-        <no-permission v-if="$store.state.user.role == 0" />
-        <div v-else>
-            <van-search v-model="searchWord" placeholder="请输入搜索关键词" show-action @search="onSearch">
-                <div slot="action" @click="onSearch">搜索</div>
-            </van-search>
-            <div>
-                <no-data v-if="repairList.length == 0" />
-                <van-list v-else v-model="Listloading" :finished="finished" @load="onLoad">
-                    <van-card v-for="(item, index) in repairList" :key="index" tag="标签" :price="item.price || '暂无报价'"
-                        :desc="statusMap.find(i => i.status == item.status ).text" :title="item.title" :thumb="item.photos && item.photos.length != 0 ? JSON.parse(item.photos)[0] : defaultImg">
-                        <div slot="footer">
-                            <van-button size="mini" @click="$router.push({name: 'repairDetail', params: item})">查看详情</van-button>
-                            <van-button v-if="item.status == 4" size="mini" type="danger" @click="pay(item.id, item.price)">缴费</van-button>
-                        </div>
-                    </van-card>
-                </van-list>
+
+        <div class="wrap">
+            <Input v-model="searchWord" style="margin-bottom: 20px;width: 50%" search enter-button placeholder="请输入关键词"
+                :on-search="search" />
+            <Table class="table" border :columns="columns" :data="userList"></Table>
+            <Spin size="large" fix v-if="spinShow"></Spin>
+        </div>
+
+        <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+                <Page :page-size="10" :total="total" :current="page + 1" @on-change="changePage"></Page>
             </div>
         </div>
+
+        <Carousel v-model="showCarousel" loop>
+        <CarouselItem>
+            <div class="demo-carousel">1</div>
+        </CarouselItem>
+        <CarouselItem>
+            <div class="demo-carousel">2</div>
+        </CarouselItem>
+        <CarouselItem>
+            <div class="demo-carousel">3</div>
+        </CarouselItem>
+        <CarouselItem>
+            <div class="demo-carousel">4</div>
+        </CarouselItem>
+    </Carousel>
 
     </div>
 </template>
 <script>
-    import noData from '@/components/noData'
-    import noPermission from '@/components/noPermission'
+    import moment from 'moment'
     import {
-        Toast,
-        Dialog
-    } from 'vant';
+        getRepair,
+        changeRepair
+    } from '@/api/repair'
     import {
         Component,
         Prop,
         Vue,
     } from 'vue-property-decorator';
-    import {
-        getRepair,
-        createRepair
-    } from '@/api/repair'
-    @Component({
-        components: {
-            noData,
-            noPermission
-        }
-    })
-    export default class Main extends Vue {
+    @Component()
+    export default class Repair extends Vue {
         statusMap = [{
-            status: 0,
-            text: '已撤消'
+            value: 0,
+            label: '已撤消'
         }, {
-            status: 1,
-            text: '已报修'
+            value: 1,
+            label: '已报修'
         }, {
-            status: 2,
-            text: '已联系'
+            value: 2,
+            label: '已联系'
         }, {
-            status: 3,
-            text: '已派修'
+            value: 3,
+            label: '已派修'
         }, {
-            status: 4,
-            text: '已维修'
+            value: 4,
+            label: '已维修'
         }, {
-            status: 5,
-            text: '已缴费'
+            value: 5,
+            label: '已缴费'
         }];
-        Listloading = false;
-        finished = false;
-        searchWord = '';
-        repairList = this.$store.state.repair.list;
+        columns = [{
+                title: '标题',
+                key: 'title'
+            },
+            {
+                title: '状态',
+                key: 'status',
+                render: (h, params) => {
+                    return h('div', [h('span', {}, this.statusMap.find(item => params.row.status == item.value)
+                        .label)])
+                },
+                filters: this.statusMap,
+                filterMethod(value, row) {
+                    return row.status == value
+                },
+                width: 100
+            },
+            {
+                title: '房间',
+                key: 'room',
+                width: 100
+            },
+            {
+                title: '业主电话',
+                key: 'tel',
+                render: (h, params) => {
+                    return params.row.tel ? h('div', params.row.tel) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                }
+            },
+            {
+                title: '创建时间',
+                key: 'create_time',
+                render: (h, params) => {
+                    return params.row.create_time ? h('div', moment(params.row.create_time - 0).format(
+                        'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                },
+                sortable: true
+            },
+            {
+                title: '派修时间',
+                key: 'appointment_time',
+                render: (h, params) => {
+                    return params.row.appointment_time ? h('div', moment(params.row.appointment_time - 0).format(
+                        'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                },
+                sortable: true
+            },
+            {
+                title: '支付时间',
+                key: 'pay_time',
+                render: (h, params) => {
+                    return params.row.pay_time ? h('div', moment(params.row.pay_time - 0).format(
+                        'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                },
+                sortable: true
+            },
+            {
+                title: '操作',
+                key: 'action',
+                width: 150,
+                align: 'center',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Button', {
+                            props: {
+                                type: 'primary',
+                                size: 'small'
+                            },
+                            style: {
+                                marginRight: '5px'
+                            },
+                            on: {
+                                click: () => {
+                                    this.changeStatus(params.row)
+                                }
+                            }
+                        }, 'View'),
+                        params.row.status >= 4 ? h('Button', {
+                            props: {
+                                type: 'text',
+                                size: 'small',
+                                disabled: true
+                            }
+                        }, this.statusMap.find(item => item.value == params.row.status).label) :
+                        h('Button', {
+                            props: {
+                                type: 'error',
+                                size: 'small'
+                            },
+                            on: {
+                                click: () => {
+                                    this.changeStatus(params.row)
+                                }
+                            }
+                        }, this.statusMap.find(item => item.value == params.row.status + 1).label)
+                    ]);
+                }
+            }
+        ];
         page = 0;
-        defaultImg = require('@/assets/noPhoto.png');
+        total = 2;
+        searchWord = ''
+        userList = [];
+        spinShow = true;
+        showCarousel = false;
+        changePage(page) {
+            this.page = page - 1
+            this.spinShow = true
+            this.fetchData()
+        }
+        async changeStatus(row) {
+            let res = await changeRepair({id: row.id, status: row.status + 1})
+            this.$Message.success(res.data.msg);
+            this.page = 0
+            this.fetchData()
+        }
         async fetchData() {
-            const vm = this
-            var res = await this.$store.dispatch('GET_REPAIR', {
-                room_id: vm.$store.state.user.room_id,
-                title: vm.searchWord,
-                page: vm.page
+            const res = await getRepair({
+                title: this.searchWord,
+                page: this.page
             })
-            this.page++
-            if (res.data.data.length < 10) {
-                vm.finished = true
-                vm.Listloading = false
-            }
-            this.repairList = this.$store.state.repair.list;
-            this.$forceUpdate()
-            Toast.clear()
-        };
-        onClickRight() {
-            this.$router.push({
-                path: '/createRepair'
+            this.userList = res.data.data.map(item => {
+                return {
+                    ...item,
+                    sex: item.sex == 0 ? '男' : '女',
+                    room: `${item.building}号楼${item.room_num}室`
+                }
             })
+            this.total = res.data.total
+            setTimeout(() => {
+                this.spinShow = false
+            }, 100)
+
         };
-        onSearch() {
-            Toast.loading({
-                mask: true,
-                duration: 0,
-                message: '加载中...'
-            });
-            this.page = 0;
-            this.fetchData()
-        };
-        pay(id, price) {
-            Dialog.confirm({
-                title: '提示',
-                message: `确定缴费${price}元？`
-            }).then(async () => {
-                await this.$store.dispatch('PAY_REPAIR', id)
-                Toast.success('缴费成功');
-                this.fetchData()
-            }).catch(() => {
-                Toast('已取消');
-            });
-        };
-        onLoad() {
-            this.fetchData()
-        };
-        mounted() {
-            if (this.$store.state.user.role != 0) {
-                Toast.loading({
-                    mask: true,
-                    duration: 0,
-                    message: '加载中...'
-                });
-                this.$nextTick(() => {
-                    this.fetchData()
-                })
-            }
+        search() {
 
         }
-
+        created() {
+            this.fetchData()
+        }
     }
 </script>
 <style lang="scss" scoped>
-
+    .wrap {
+        position: relative;
+        width: 95%;
+        margin: 30px auto
+    }
 </style>

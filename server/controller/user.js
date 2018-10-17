@@ -40,12 +40,12 @@ exports.getUserInfo = async ctx => {
         }
         return false
     }
-    
+
     let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[0].user_id}`
     await model.operateSql($selectUserInfo).then(res => {
         res[0].id = user_id[0].user_id
-        if(res[0].role == '0') {
-            
+        if (res[0].role == '0') {
+
             ctx.body = {
                 code: 20000,
                 msg: '用户信息',
@@ -96,7 +96,10 @@ exports.updateUser = async ctx => {
         $checkNameExist = `select * from user where name="${user.name}"`
         let nameCheckArr = await model.operateSql($checkNameExist)
         if (nameCheckArr.length) {
-            ctx.body = {code: 20001, msg: '用户名已存在'}
+            ctx.body = {
+                code: 20001,
+                msg: '用户名已存在'
+            }
             return
         }
         let values = Object.values(user).map(item => `"${item}"`).toString()
@@ -117,9 +120,33 @@ exports.updateUser = async ctx => {
         })
 }
 
+// 将普通家庭成员改为业主
+exports.userToOwner = async ctx => {
+    let user = ctx.request.body
+    let $selectOldUser = `select * from user where isDel=0 and role=1 and room_id=${user.room_id}`
+    const oldUser = await model.operateSql($selectOldUser)
+    $newOwner = `update user set role=1 where id="${user.id}";`
+    $oldOwner = `update user set role=2 where id="${oldUser[0].id}";`
+    console.log($oldOwner)
+    try {
+        await model.operateSql($newOwner)
+        await model.operateSql($oldOwner)
+        ctx.body = {
+            code: 20000,
+            msg: '更新成功'
+        }
+    } catch (err) {
+        ctx.body = {
+            code: -1,
+            msg: '更新失败'
+        }
+    }
+    
+}
+
 exports.getUserList = async ctx => {
     var query = ctx.request.query
-    let limit = ctx.request.query.limit || 20
+    let limit = ctx.request.query.limit || 10
     let page = ctx.request.query.page || 0
     var whereStr = Object.keys(query).reduce((total, curr) => {
         if (curr == 'page' || curr == 'limit') {
@@ -127,21 +154,21 @@ exports.getUserList = async ctx => {
         }
         return [...total, `${curr}="${query[curr]}"`]
     }, []).join(' and ')
+    let $selectCount = `select count(*) from user where isDel=0 ${whereStr ? ' and ' + whereStr : ''}`
+    const count = await model.operateSql($selectCount)
     let $selectUserList = `select user.id,user.name,user.nick_name,user.sex,user.room_id,user.role,user.tel,room.building,room.room_num from user left join room on user.room_id=room.id where isDel=0 ${whereStr ? ' and ' + whereStr : ''} order by role desc limit ${limit} offset ${page * limit}`
-    console.log($selectUserList)
     var findRoomPro = roomId => new Promise((resolve, reject) => {
         let $findRoom = `select * from room where id="${roomId}"`
         model.operateSql($findRoom).then(res => resolve(res)).catch(err => reject(err))
     })
     await model.operateSql($selectUserList).then(async list => {
-    
-
         await Promise.all(list.map(i => findRoomPro(i.room_id))).then(result => {
             result.forEach((item, index) => list[index].room = item[0].room_num)
             ctx.body = {
                 code: 20000,
                 msg: '用户列表',
-                data: list
+                data: list,
+                total: count[0]['count(*)']
             }
         })
     }).catch(err => {
@@ -156,15 +183,24 @@ exports.getUserList = async ctx => {
 
 exports.checkPassword = async ctx => {
     var query = ctx.request.query
-    try{
+    try {
         let $selectUser = `select password from user where name="${query.name}"`
         let password = await model.operateSql($selectUser)
         if (password[0].password == query.password) {
-            ctx.body = {code: 20000, msg: '验证成功'}
+            ctx.body = {
+                code: 20000,
+                msg: '验证成功'
+            }
         } else {
-            ctx.body = {code: 20003, msg: '密码错误'}
+            ctx.body = {
+                code: 20003,
+                msg: '密码错误'
+            }
         }
     } catch (err) {
-        ctx.body = {code: -1, msg: '验证失败'}
+        ctx.body = {
+            code: -1,
+            msg: '验证失败'
+        }
     }
 }

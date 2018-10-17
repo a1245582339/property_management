@@ -98,7 +98,7 @@
             });
         }
         timestampToTime(timestamp) {
-            return moment(timestamp - 0).format('YYYY-MM-DD hh:mm:ss');
+            return moment(timestamp - 0).format('YYYY-MM-DD HH:mm:ss');
         };
         preview(index) {
             ImagePreview({

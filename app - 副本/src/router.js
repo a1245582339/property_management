@@ -44,7 +44,7 @@ export default new Router({
           import('./views/tab/HomeOwner')
       },{
         path: 'homeUser',
-        name: 'homeUser',
+        name: 'HomeUser',
         component: () =>
           import('./views/tab/HomeUser')
       }, {
@@ -52,6 +52,11 @@ export default new Router({
         name: 'Me',
         component: () =>
           import('./views/tab/Me')
+      }, {
+        path: 'partType',
+        name: 'PartType',
+        component: () =>
+          import('./views/tab/PartType')
       }]
     },
     {
