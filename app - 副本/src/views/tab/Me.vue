@@ -9,9 +9,9 @@
         </Card>
 
         <Modal v-model="passwordModal" title="修改密码" :footer-hide="true" @on-visible-change="visibleChange">
-            <Form ref="Form" :model="form" :rules="loginForm" @keydown.enter.native="login">
+            <Form ref="Form" :model="form" :rules="loginForm" @keydown.enter.native="submit">
                 <FormItem prop="oldPassword">
-                    <Input type="text" v-model="form.oldPassword" placeholder="请输入原密码">
+                    <Input type="password" v-model="form.oldPassword" placeholder="请输入原密码">
                     <span slot="prepend">
                         <Icon :size="14" type="md-lock"></Icon>
                     </span>

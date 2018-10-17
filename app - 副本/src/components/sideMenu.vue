@@ -15,7 +15,7 @@
                 用户管理
             </template>
             <MenuItem name="HomeOwner" :to="{name: 'HomeOwner'}"><Icon type="md-contact" /><span>业主管理</span></MenuItem>
-            <MenuItem name="HomeUser"><Icon type="md-contacts" /><span>家庭成员管理</span></MenuItem>
+            <MenuItem name="HomeUser" :to="{name: 'HomeUser'}"><Icon type="md-contacts" /><span>家庭成员管理</span></MenuItem>
         </Submenu>
         <MenuItem name="Repair" :to="{name: 'Repair'}">
             <Icon type="md-construct" />
@@ -26,7 +26,7 @@
                 <Icon type="md-build" />
                 零件管理
             </template>
-            <MenuItem name="PartType"><Icon type="ios-briefcase" /><span>零件类型管理</span></MenuItem>
+            <MenuItem name="PartType" :to="{name: 'PartType'}"><Icon type="ios-briefcase" /><span>零件类型管理</span></MenuItem>
             <MenuItem name="Part"><Icon type="ios-build" /><span>零件管理</span></MenuItem>
         </Submenu>
         <MenuItem name="Admin">

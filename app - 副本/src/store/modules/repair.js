@@ -1,8 +1,6 @@
 import {
     getRepair,
     createRepair,
-    delRepair,
-    payRepair
 } from '@/api/repair';
 const repair = {
     state: {
@@ -31,30 +29,6 @@ const repair = {
                         commit('SET_MORE_LIST', res.data.data)
                     }
                     return res
-                } else {
-                    throw res.data.msg
-                }
-            } catch (err) {
-                throw err
-            }
-        },
-        async DEL_REPAIR({}, id) {
-            try {
-                const res = await delRepair(id)
-                if (res.data.code == '20000') {
-                    return res.data.msg
-                } else {
-                    throw res.data.msg
-                }
-            } catch (err) {
-                throw err
-            }
-        },
-        async PAY_REPAIR({}, id) {
-            try {
-                const res = await payRepair(id)
-                if (res.data.code == '20000') {
-                    return res.data.msg
                 } else {
                     throw res.data.msg
                 }

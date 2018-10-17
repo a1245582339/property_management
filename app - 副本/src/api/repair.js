@@ -8,13 +8,8 @@ export const getRepair = query => {
 export const createRepair = data => {
     return http.post(`${domin}`, data)
 }
-
-export const delRepair = id => {
-    return http.put(`${domin}`, {id: id, status: 0})
-}
-
-export const payRepair = id => {
-    return http.put(`${domin}`, {id: id, status: 5})
+export const changeRepair = data => {
+    return http.put(`${domin}`, data)
 }
 
 export const uploadImage = file => {

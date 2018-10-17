@@ -14,16 +14,15 @@
 </template>
 <script>
     import {
-        getHomeUsers,
-        userToOwner
-    } from '@/api/homeUsers'
+        getPartType
+    } from '@/api/partType'
     import {
         Component,
         Prop,
         Vue,
     } from 'vue-property-decorator';
     @Component()
-    export default class HomeUser extends Vue {
+    export default class PartType extends Vue {
         columns = [{
                 title: '用户名',
                 key: 'name'
@@ -105,8 +104,7 @@
             this.fetchData()
         }
         async fetchData() {
-            const res = await getHomeUsers({
-                role: 2,
+            const res = await getPartType({
                 page: this.page,
             })
             this.userList = res.data.data.map(item => {

@@ -1,13 +1,21 @@
 <template>
+<div>
     <div class="wrap">
         <Table class="table" border :columns="columns" :data="userList"></Table>
         <Spin size="large" fix v-if="spinShow"></Spin>
     </div>
+    <div style="margin: 10px;overflow: hidden">
+        <div style="float: right;">
+            <Page :page-size="10" :total="total" :current="page + 1" @on-change="changePage"></Page>
+        </div>
+    </div>
+</div>
+    
 </template>
 <script>
     import {
-        getRoom
-    } from '@/api/room'
+        getHomeUsers
+    } from '@/api/homeUsers'
     import {
         Component,
         Prop,
@@ -16,28 +24,27 @@
     @Component()
     export default class HomeOwner extends Vue {
         columns = [{
-                title: '楼号',
-                key: 'building',
-                filters: [],
-                filterMultiple: false,
-                filterMethod(value, row) {
-                    return row.building == value
-                }
+                title: '用户名',
+                key: 'name'
             },
             {
-                title: '房间号',
-                key: 'room_num'
-            },
-            {
-                title: '业主',
-                key: 'name',
+                title: '昵称',
+                key: 'nick_name',
                 render: (h, params) => {
-                    return params.row.name ? h('div', params.row.name) : h('div', [h('span', {
+                    return params.row.nick_name ? h('div', params.row.nick_name) : h('div', [h('span', {
                         style: {
                             color: '#c5c8ce'
                         }
                     }, '暂无')])
                 }
+            },
+            {
+                title: '性别',
+                key: 'sex'
+            },
+            {
+                title: '房间',
+                key: 'room'
             },
             {
                 title: '业主电话',
@@ -49,25 +56,27 @@
                         }
                     }, '暂无')])
                 }
-            }
+            },
         ];
+        page = 0;
+        total = 2;
         userList = [];
         spinShow = true;
-        show(index) {
-            this.$Modal.info({
-                title: 'User Info',
-                content: `Name：${this.data6[index].name}<br>Age：${this.data6[index].age}<br>Address：${this.data6[index].address}`
-            })
-        };
-        remove(index) {
-            this.data6.splice(index, 1);
+        changePage(page) {
+            this.page = page - 1
+            this.spinShow = true
+            this.fetchData()
         }
         async fetchData() {
-            const res = await getRoom()
-            this.roomList = res.data.data
-            this.columns[0].filters = res.data.data.reduce((total, curr) => {
-                return total.find(item => curr.building == item.label) ? total : [...total, {label: curr.building, value: curr.building}]
-            }, [])
+            const res = await getHomeUsers({role: 1, page: this.page})
+            this.userList = res.data.data.map(item => {
+                return {
+                    ...item,
+                    sex: item.sex == 0 ? '男' : '女',
+                    room: `${item.building}号楼${item.room_num}室`
+                }
+            })
+            this.total = res.data.total
             setTimeout(() => {
                 this.spinShow = false
             }, 100)
@@ -82,6 +91,6 @@
 .wrap {
     position: relative;
     width: 95%;
-    margin: 50px auto
+    margin: 30px auto
 }
 </style>

@@ -21,6 +21,7 @@ router.get('/admin/checkPassword', admin.checkPassword)
 router.post('/user/login', user.login)
 router.get('/user/userInfo', user.getUserInfo)
 router.post('/user/userInfo', user.updateUser)
+router.post('/user/userToOwner', user.userToOwner)
 router.get('/userList', user.getUserList)
 router.get('/user/checkPassword', user.checkPassword)
 
