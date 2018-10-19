@@ -14,8 +14,7 @@ exports.getPart = async ctx => {
             return [...total, `${curr}="${query[curr]}"`]
         }
     }, []).join(' and ')
-    let $selectPart = `select part.*,part_type.type_name from part left join part_type on part.type_id=part_type.id where isDel="0" ${whereStr ? 'and ' + whereStr : ''} limit ${limit} offset ${page * limit}`
-    // console.log($selectPart)
+    let $selectPart = `select part.*,part_type.type_name from part left join part_type on part.type_id=part_type.id where part.isDel=0 ${whereStr ? 'and ' + whereStr : ''} limit ${limit} offset ${page * limit}`
     await model.operateSql($selectPart).then(res => {
         ctx.body = {code: 20000, msg: '零件列表', data: res}
     }).catch(err => {
@@ -65,14 +64,14 @@ exports.updatePartType = async ctx => {
         }, []).toString()
         if (data.isDel) {
             var $delPart = `update part set isDel="1" where type_id="${data.id}"`
+            await model.operateSql($delPart)
         }
-        await model.operateSql($delPart)
         var $sql = `update part_type set ${setStr} where id="${data.id}"`
     } else {
         let insertStr = Object.values(data).map(item => `"${item}"`).toString()
         var $sql = `insert into part_type (${Object.keys(data).toString()}) value (${insertStr})`
     }
-    // console.log($sql)
+    console.log($sql)
     await model.operateSql($sql).then(res => {
         ctx.body = {code: 20000, msg: '更新成功'}
     }).catch(err => {

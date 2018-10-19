@@ -27,7 +27,7 @@
                 零件管理
             </template>
             <MenuItem name="PartType" :to="{name: 'PartType'}"><Icon type="ios-briefcase" /><span>零件类型管理</span></MenuItem>
-            <MenuItem name="Part"><Icon type="ios-build" /><span>零件管理</span></MenuItem>
+            <MenuItem name="Part" :to="{name: 'Part'}"><Icon type="ios-build" /><span>零件管理</span></MenuItem>
         </Submenu>
         <MenuItem name="Admin">
             <Icon type="logo-octocat" />

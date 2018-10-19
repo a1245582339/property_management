@@ -1,10 +1,10 @@
 import http from './index';
-const domin  = '/partType';
+const domin  = '/part';
 
-export const getPartType = query => {
+export const getPart = query => {
     return http.get(`${domin}`, {params: query})
 }
 
-export const updataPartType = data => {
+export const updataPart = data => {
     return http.post(`${domin}`, data)
 }

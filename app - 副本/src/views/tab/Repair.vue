@@ -4,7 +4,7 @@
         <div class="wrap">
             <Input v-model="searchWord" style="margin-bottom: 20px;width: 50%" search enter-button placeholder="请输入关键词"
                 :on-search="search" />
-            <Table class="table" border :columns="columns" :data="userList"></Table>
+            <Table class="table" border :columns="columns" :data="userList" width="1100"></Table>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
 
@@ -14,20 +14,45 @@
             </div>
         </div>
 
-        <Carousel v-model="showCarousel" loop>
-        <CarouselItem>
-            <div class="demo-carousel">1</div>
-        </CarouselItem>
-        <CarouselItem>
-            <div class="demo-carousel">2</div>
-        </CarouselItem>
-        <CarouselItem>
-            <div class="demo-carousel">3</div>
-        </CarouselItem>
-        <CarouselItem>
-            <div class="demo-carousel">4</div>
-        </CarouselItem>
-    </Carousel>
+        <Modal v-model="showCarouselModel" title="报修照片" :footer-hide="true">
+            <Carousel style="width: 488px" :height="450">
+                <CarouselItem class="carousel" v-for="(item, index) in photos" :key="index">
+                    <img :src="item" alt="">
+                </CarouselItem>
+            </Carousel>
+
+        </Modal>
+
+        <Modal v-model="showPartModel" title="报价" :footer-hide="true" @on-visible-change="visibleChange">
+            <Form ref="Form" :model="form" :rules="rules" @keydown.enter.native="submit" :label-width="100">
+                <FormItem prop="price" label="报价">
+                    <Input type="text" v-model="form.price" placeholder="请输入报价">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem style="display: none" prop="id" label="id">
+                    <Input type="text" v-model="form.id" placeholder="">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem style="display: none" prop="status" label="状态">
+                    <Input type="text" v-model="form.status" placeholder="">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem style="text-align: right;">
+                    <Button size="large" type="text" @click="showPartModel = false">取消</Button>
+                    <Button size="large" type="primary" style="margin-left: 8px" @click="submit">确认</Button>
+                </FormItem>
+            </Form>
+        </Modal>
+
 
     </div>
 </template>
@@ -38,41 +63,71 @@
         changeRepair
     } from '@/api/repair'
     import {
+        getPart,
+    } from '@/api/part'
+    import {
+        getPartType,
+    } from '@/api/partType'
+    import {
         Component,
         Prop,
         Vue,
     } from 'vue-property-decorator';
+    import Login from '../Login.vue';
     @Component()
     export default class Repair extends Vue {
         statusMap = [{
             value: 0,
-            label: '已撤消'
+            label: '已撤消',
+            color: '#c5c8ce',
+            icon: "md-remove-circle"
         }, {
             value: 1,
-            label: '已报修'
+            label: '已报修',
+            color: '#5cadff',
+            icon: "md-alert"
         }, {
             value: 2,
-            label: '已联系'
+            label: '已联系',
+            color: '#2d8cf0',
+            icon: "ios-clipboard-outline"
         }, {
             value: 3,
-            label: '已派修'
+            label: '已派修',
+            color: '#2db7f5',
+            icon: "ios-navigate"
         }, {
             value: 4,
-            label: '已维修'
+            label: '已维修',
+            color: '#ed4014',
+            icon: "ios-hammer"
         }, {
             value: 5,
-            label: '已缴费'
+            label: '已缴费',
+            color: '#19be6b',
+            icon: "ios-checkmark-circle"
         }];
         columns = [{
                 title: '标题',
-                key: 'title'
+                key: 'title',
+                width: 150,
+                fixed: 'left'
             },
             {
                 title: '状态',
                 key: 'status',
+                width: 100,
                 render: (h, params) => {
-                    return h('div', [h('span', {}, this.statusMap.find(item => params.row.status == item.value)
-                        .label)])
+                    return h('div', [h('Icon', {
+                        props: {
+                            type: this.statusMap.find(item => params.row.status == item.value).icon,
+                            color: this.statusMap.find(item => params.row.status == item.value)
+                                .color
+                        },
+                    }), h('span', {},
+                        `  ${this.statusMap.find(item => params.row.status == item.value)
+                        .label}`
+                    )])
                 },
                 filters: this.statusMap,
                 filterMethod(value, row) {
@@ -88,6 +143,7 @@
             {
                 title: '业主电话',
                 key: 'tel',
+                width: 120,
                 render: (h, params) => {
                     return params.row.tel ? h('div', params.row.tel) : h('div', [h('span', {
                         style: {
@@ -99,6 +155,7 @@
             {
                 title: '创建时间',
                 key: 'create_time',
+                width: 150,
                 render: (h, params) => {
                     return params.row.create_time ? h('div', moment(params.row.create_time - 0).format(
                         'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
@@ -112,6 +169,7 @@
             {
                 title: '派修时间',
                 key: 'appointment_time',
+                width: 150,
                 render: (h, params) => {
                     return params.row.appointment_time ? h('div', moment(params.row.appointment_time - 0).format(
                         'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
@@ -125,6 +183,7 @@
             {
                 title: '支付时间',
                 key: 'pay_time',
+                width: 150,
                 render: (h, params) => {
                     return params.row.pay_time ? h('div', moment(params.row.pay_time - 0).format(
                         'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
@@ -136,9 +195,21 @@
                 sortable: true
             },
             {
+                title: '价格',
+                key: 'price',
+                width: 100,
+                render: (h, params) => {
+                    return params.row.price ? h('div', params.row.price) : h('div', [h('span', {
+                        style: {
+                            color: '#c5c8ce'
+                        }
+                    }, '暂无')])
+                },
+            },
+            {
                 title: '操作',
                 key: 'action',
-                width: 150,
+                width: 200,
                 align: 'center',
                 render: (h, params) => {
                     return h('div', [
@@ -152,11 +223,11 @@
                             },
                             on: {
                                 click: () => {
-                                    this.changeStatus(params.row)
+                                    this.showPart(params.row)
                                 }
                             }
-                        }, 'View'),
-                        params.row.status >= 4 ? h('Button', {
+                        }, '图片'),
+                        params.row.status >= 4 || params.row.status == 0 ? h('Button', {
                             props: {
                                 type: 'text',
                                 size: 'small',
@@ -178,23 +249,96 @@
                 }
             }
         ];
+        form = {
+            id: '',
+            price: '',
+            status: ''
+        }
+        rules = {
+            price: [{
+                validator: (rule, value, callback) => {
+                    if (value == '') {
+                        callback(new Error('请输入报价'));
+                    } else if (!(value > 0)) {
+                        callback(new Error('价格须为正数!'));
+                    } else {
+                        callback();
+                    }
+                },
+                trigger: 'blur'
+            }],
+        }
         page = 0;
         total = 2;
         searchWord = ''
         userList = [];
         spinShow = true;
-        showCarousel = false;
+        showCarouselModel = false;
+        showPartModel = false;
+        photos = [];
         changePage(page) {
             this.page = page - 1
             this.spinShow = true
             this.fetchData()
         }
+        showCarousel(row) {
+            if (row.photos) {
+                this.photos = JSON.parse(row.photos)
+                this.showCarouselModel = true
+            } else {
+                this.photos = []
+                this.$Message.warning('此报修未上传照片！');
+            }
+
+        }
+
+        submit() {
+            var vm = this
+            this.$refs['Form'].validate(async (valid) => {
+                if (valid) {
+                    await vm.changeStatus(vm.form)
+                    this.showPartModel = false
+                    this.fetchData()
+                }
+            })
+        }
+
+        visibleChange(status) {
+            if (!status) {
+                this.$refs['Form'].resetFields()
+            }
+        }
+
         async changeStatus(row) {
-            let res = await changeRepair({id: row.id, status: row.status + 1})
+            if (row.status < 3 || row.price) {
+                let data = row.price ? row : {
+                    id: row.id,
+                    status: row.status + 1,
+                }
+                this.$Modal.confirm({
+                    title: '提示',
+                    content: '确定要将此条报修进行至下一步？',
+                    onOk: async () => {
+                        await this.updataRepair(data)
+                    },
+                    onCancel: () => {
+                        this.$Message.info('已取消');
+                    }
+                });
+            } else {
+                this.form.id = row.id
+                this.form.status = row.status + 1
+                this.showPartModel = true
+            }
+        }
+
+        async updataRepair(data) {
+            let res = await changeRepair(data)
             this.$Message.success(res.data.msg);
             this.page = 0
             this.fetchData()
         }
+
         async fetchData() {
             const res = await getRepair({
                 title: this.searchWord,
@@ -225,6 +369,17 @@
     .wrap {
         position: relative;
         width: 95%;
-        margin: 30px auto
+        margin: 30px auto;
+
+
+    }
+
+    .carousel {
+        width: 488px;
+        text-align: center;
+
+        img {
+            max-width: 100%;
+        }
     }
 </style>

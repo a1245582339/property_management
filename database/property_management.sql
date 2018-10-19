@@ -3,15 +3,15 @@
 
  Source Server         : localhost_3306
  Source Server Type    : MySQL
- Source Server Version : 50720
+ Source Server Version : 50723
  Source Host           : localhost:3306
  Source Schema         : property_management
 
  Target Server Type    : MySQL
- Target Server Version : 50720
+ Target Server Version : 50723
  File Encoding         : 65001
 
- Date: 17/10/2018 23:24:25
+ Date: 19/10/2018 18:23:15
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `admin_token`  (
   `deadline` bigint(13) NOT NULL,
   `admin_id` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of admin_token
@@ -35,6 +35,10 @@ CREATE TABLE `admin_token`  (
 INSERT INTO `admin_token` VALUES (8, '1536316910276tokenddd', 1536921710276, 1);
 INSERT INTO `admin_token` VALUES (9, '1536906504242tokenddd', 1537511304242, 1);
 INSERT INTO `admin_token` VALUES (10, '1539516058550tokenddd', 1540120858550, 1);
+INSERT INTO `admin_token` VALUES (11, '1539828735258tokenddd', 1540433535258, 1);
+INSERT INTO `admin_token` VALUES (12, '1539830468911tokenddd', 1540435268911, 1);
+INSERT INTO `admin_token` VALUES (13, '1539848186595tokenddd', 1540452986595, 1);
+INSERT INTO `admin_token` VALUES (14, '1539928514804tokenddd', 1540533314804, 1);
 
 -- ----------------------------
 -- Table structure for admin_user
@@ -67,14 +71,15 @@ CREATE TABLE `part`  (
   `isDel` int(11) NOT NULL DEFAULT 0,
   `count` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of part
 -- ----------------------------
-INSERT INTO `part` VALUES (4, '3mm螺丝', 2.00, 1, 0, 0);
+INSERT INTO `part` VALUES (4, '3mm螺丝', 2.00, 2, 0, 0);
 INSERT INTO `part` VALUES (5, '5mm螺丝', 2.00, 1, 0, 0);
 INSERT INTO `part` VALUES (6, '5cm地漏', 5.00, 2, 0, 0);
+INSERT INTO `part` VALUES (7, '一字改锥', 2.00, 5, 0, 999);
 
 -- ----------------------------
 -- Table structure for part_order
@@ -104,13 +109,16 @@ CREATE TABLE `part_type`  (
   `type_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `isDel` int(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of part_type
 -- ----------------------------
-INSERT INTO `part_type` VALUES (1, '螺丝', 1);
+INSERT INTO `part_type` VALUES (1, '螺丝', 0);
 INSERT INTO `part_type` VALUES (2, '地漏', 0);
+INSERT INTO `part_type` VALUES (3, '板子', 0);
+INSERT INTO `part_type` VALUES (4, '灯泡', 0);
+INSERT INTO `part_type` VALUES (5, '改锥', 0);
 
 -- ----------------------------
 -- Table structure for repair_list
@@ -132,12 +140,12 @@ CREATE TABLE `repair_list`  (
 -- ----------------------------
 -- Records of repair_list
 -- ----------------------------
-INSERT INTO `repair_list` VALUES (1, 'title test', 0, '', NULL, 1, '1536751006000', NULL, NULL);
-INSERT INTO `repair_list` VALUES (7, '测试', 0, NULL, NULL, 1, '1544444444444', NULL, NULL);
-INSERT INTO `repair_list` VALUES (8, '不知道啥玩意坏了', 2, NULL, NULL, 1, '1555555555555', NULL, '1538890692057');
-INSERT INTO `repair_list` VALUES (29, '测试', 3, '[\"/img/repair153889045376411987.png\"]', NULL, 1, '1538890457496', NULL, NULL);
-INSERT INTO `repair_list` VALUES (30, '测试1', 5, '[\"/img/repair153889059018213784.png\",\"/img/repair153889059018214899.png\"]', 20.00, 1, '1538890591262', NULL, '1538890892765');
-INSERT INTO `repair_list` VALUES (31, '测试新增', 1, '[\"/img/repair153889087536812713.png\",\"/img/repair153889087536815888.png\"]', NULL, 1, '1538890876510', NULL, NULL);
+INSERT INTO `repair_list` VALUES (1, 'title test', 5, '', NULL, 1, '1536751006000', '1539938939298', '1539939016396');
+INSERT INTO `repair_list` VALUES (7, '测试', 4, NULL, 123.00, 1, '1544444444444', '1539939062285', NULL);
+INSERT INTO `repair_list` VALUES (8, '不知道啥玩意坏了', 1, NULL, NULL, 3, '1555555555555', NULL, NULL);
+INSERT INTO `repair_list` VALUES (29, '测试', 1, '[\"/img/repair153889045376411987.png\"]', 123.00, 2, '1538890457496', NULL, NULL);
+INSERT INTO `repair_list` VALUES (30, '测试1', 1, '[\"/img/repair153889059018213784.png\",\"/img/repair153889059018214899.png\"]', 20.00, 1, '1538890591262', NULL, NULL);
+INSERT INTO `repair_list` VALUES (31, '测试新增', 1, '[\"/img/repair153889087536812713.png\",\"/img/repair153889087536815888.png\"]', 123.00, 13, '1538890876510', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for room
@@ -183,10 +191,10 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 't1', '王穷鬼', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 1, 1, 2, 0, '15444444445');
-INSERT INTO `user` VALUES (2, 't2', '张百万', '4693fbb215b8ca15a6900f0cfa164cdc', 1, 1, 1, 1, '15555555555');
-INSERT INTO `user` VALUES (3, 't3', '萌新', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 0, 1, 1, 0, '13258787777');
-INSERT INTO `user` VALUES (13, 't4', '铁锤妹妹', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 0, 1, 1, 1, '13555555555');
+INSERT INTO `user` VALUES (1, 't1', '王穷鬼', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 1, 3, 1, 0, '15444444445');
+INSERT INTO `user` VALUES (2, 't2', '张百万', '4693fbb215b8ca15a6900f0cfa164cdc', 1, 1, 2, 1, '15555555555');
+INSERT INTO `user` VALUES (3, 't3', '萌新', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 0, 1, 2, 0, '13258787777');
+INSERT INTO `user` VALUES (13, 't4', '铁锤妹妹', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 0, 2, 1, 1, '13555555555');
 INSERT INTO `user` VALUES (16, 't6666', '测试新增', '0b4e7a0e5fe84ad35fb5f95b9ceeac79', 0, 1, 1, 0, '13333333333');
 
 -- ----------------------------

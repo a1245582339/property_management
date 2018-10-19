@@ -1,20 +1,42 @@
 <template>
     <div>
         <div class="wrap">
-            <Table class="table" border :columns="columns" :data="userList"></Table>
+            <Button type="primary" @click="Modal = true" size="large">新增</Button>
+            <Table class="table" border :columns="columns" :data="typeList"></Table>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
-        <div style="margin: 10px;overflow: hidden">
-            <div style="float: right;">
-                <Page :page-size="10" :total="total" :current="page + 1" @on-change="changePage"></Page>
-            </div>
-        </div>
+
+
+        <Modal v-model="Modal" title="修改零件类型" @on-visible-change="visibleChange" :footer-hide="true">
+            <Form ref="Form" :model="form" :rules="rules" @keydown.enter.native="submit" :label-width="100">
+                <FormItem prop="type_name" label="零件类型名称">
+                    <Input type="text" v-model="form.type_name" placeholder="请输入新的零件类型名称">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem style="display: none" prop="id" label="零件类型id">
+                    <Input type="text" v-model="form.id" placeholder="">
+                    <span slot="prepend">
+                        <Icon :size="14" type="md-lock"></Icon>
+                    </span>
+                    </Input>
+                </FormItem>
+                <FormItem style="text-align: right;">
+                    <Button size="large" type="text" @click="Modal = false">取消</Button>
+                    <Button size="large" type="primary" style="margin-left: 8px" @click="submit">确认</Button>
+                </FormItem>
+            </Form>
+        </Modal>
+
     </div>
 
 </template>
 <script>
     import {
-        getPartType
+        getPartType,
+        updataPartType
     } from '@/api/partType'
     import {
         Component,
@@ -24,97 +46,101 @@
     @Component()
     export default class PartType extends Vue {
         columns = [{
-                title: '用户名',
-                key: 'name'
-            },
-            {
-                title: '昵称',
-                key: 'nick_name',
-                render: (h, params) => {
-                    return params.row.nick_name ? h('div', params.row.nick_name) : h('div', [h('span', {
-                        style: {
-                            color: '#c5c8ce'
-                        }
-                    }, '暂无')])
-                }
-            },
-            {
-                title: '性别',
-                key: 'sex'
-            },
-            {
-                title: '房间',
-                key: 'room'
-            },
-            {
-                title: '联系电话',
-                key: 'tel',
-                render: (h, params) => {
-                    return params.row.tel ? h('div', params.row.tel) : h('div', [h('span', {
-                        style: {
-                            color: '#c5c8ce'
-                        }
-                    }, '暂无')])
-                }
+                title: '零件类型',
+                key: 'type_name'
             },
             {
                 title: '操作',
                 key: 'action',
-                width: 150,
+                width: 200,
                 align: 'center',
                 render: (h, params) => {
                     return h('div', [
+                        h('Button', {
+                            props: {
+                                type: 'primary',
+                            },
+                            on: {
+                                click: () => {
+                                    this.edit(params.row)
+                                }
+                            }
+                        }, '编辑'),
+                        h('span', ' '),
                         h('Button', {
                             props: {
                                 type: 'error',
                             },
                             on: {
                                 click: () => {
-                                    this.toOwner(params.row)
+                                    this.del(params.row)
                                 }
                             }
-                        }, '设为业主')
+                        }, '删除')
                     ]);
                 }
             }
         ];
         page = 0;
         total = 2;
-        userList = [];
+        typeList = [];
         spinShow = true;
-        toOwner(row) {
+        Modal = false;
+        form = {
+            
+        };
+        rules = {
+            type_name: [{
+                required: true,
+                message: '请输入新的类型名称！',
+                trigger: 'blur'
+            }]
+        }
+        del(row) {
             this.$Modal.confirm({
                 title: '提示',
                 render: (h) => {
-                    return h('p', `确定要将${row.nick_name ? row.nick_name : row.name}设${row.room}为业主？`)
+                    return h('p', `确定删除“${row.type_name}”类型，并删除其下所有零件吗？`)
                 },
                 onOk: () => {
-                    userToOwner(row).then(res => {
-                        this.$Message.success(res.data.msg);
+                    updataPartType({
+                        id: row.id,
+                        isDel: 1
+                    }).then(res => {
+                        this.$Message.success('删除成功');
                         this.page = 0
                         this.fetchData()
                     })
-                    
+
                 }
             })
         }
-        changePage(page) {
-            this.page = page - 1
-            this.spinShow = true
-            this.fetchData()
+        edit(row) {
+            if (row.id) {
+                this.form.id = row.id
+            }
+            this.form.type_name = row.type_name
+            this.Modal = true
+        }
+        submit() {
+            var vm = this
+            this.$refs['Form'].validate(async (valid) => {
+                if (valid) {
+                    this.$Message.success((await updataPartType(vm.form)).data.msg)
+                    this.Modal = false
+                    this.fetchData()
+                }
+            })
+        }
+        visibleChange(status) {
+            if (!status) {
+                this.$refs['Form'].resetFields()
+            }
+            
         }
         async fetchData() {
-            const res = await getPartType({
-                page: this.page,
-            })
-            this.userList = res.data.data.map(item => {
-                return {
-                    ...item,
-                    sex: item.sex == 0 ? '男' : '女',
-                    room: `${item.building}号楼${item.room_num}室`
-                }
-            })
-            this.total = res.data.total
+            const res = await getPartType()
+            this.typeList = res.data.data
             setTimeout(() => {
                 this.spinShow = false
             }, 100)
@@ -130,8 +156,10 @@
         position: relative;
         width: 95%;
         margin: 30px auto;
+
         .table {
-            margin-top: 20px;;
+            margin-top: 20px;
+            ;
         }
     }
 </style>

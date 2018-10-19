@@ -57,6 +57,11 @@ export default new Router({
         name: 'PartType',
         component: () =>
           import('./views/tab/PartType')
+      }, {
+        path: 'part',
+        name: 'Part',
+        component: () =>
+          import('./views/tab/Part')
       }]
     },
     {
