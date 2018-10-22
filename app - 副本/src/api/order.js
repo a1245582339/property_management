@@ -1,10 +1,10 @@
 import http from './index';
-const domin  = '/part';
+const domin  = '/order';
 
-export const getPart = query => {
+export const getOrder = query => {
     return http.get(`${domin}`, {params: query})
 }
 
-export const updatePart = data => {
+export const updateOrder = data => {
     return http.post(`${domin}`, data)
 }
