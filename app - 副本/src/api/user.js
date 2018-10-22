@@ -14,7 +14,7 @@ export const createUser = data => {
 }
 
 export const updateUserInfo = data => {
-    return http.post(`${domin}/userInfo`, {id: data.id, nick_name: data.nick_name, tel: data.tel, password: data.password})
+    return http.post(`${domin}/userInfo`, data)
 }
 
 

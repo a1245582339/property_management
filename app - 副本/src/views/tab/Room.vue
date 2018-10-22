@@ -3,7 +3,7 @@
         <Table class="table" border :columns="columns" :data="roomList"></Table>
         <Spin size="large" fix v-if="spinShow"></Spin>
         <Modal v-model="modalShow" title="新增业主" :footer-hide="true" @on-visible-change="visibleChange">
-            <Form ref="Form" :model="form" :rules="addForm" @keydown.enter.native="login" :label-width="50">
+            <Form ref="Form" :model="form" :rules="addForm" @keydown.enter.native="submit" :label-width="50">
                 <FormItem prop="name" label="用户名">
                     <Input type="text" v-model="form.name" placeholder="请输入用户名">
                     <span slot="prepend">

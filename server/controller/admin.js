@@ -90,13 +90,16 @@ exports.updateUser = async ctx => {
 exports.getAdminList = async ctx => {
     let limit = ctx.request.query.limit || 10
     let page = ctx.request.query.page || 0
+    let $selectCount = `select count(*) from admin_user where isDel=0`
+    const count = await model.operateSql($selectCount)
     let $selectUserList = `select * from admin_user where isDel=0 limit ${limit} offset ${page * limit}`
 
     await model.operateSql($selectUserList).then(list => {
         ctx.body = {
             code: 20000,
             msg: '管理员列表',
-            data: list
+            data: list,
+            total: count[0]['count(*)']
         }
     }).catch(err => {
         ctx.body = {

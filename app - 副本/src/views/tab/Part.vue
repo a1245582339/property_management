@@ -308,10 +308,8 @@
         position: relative;
         width: 95%;
         margin: 30px auto;
-
         .table {
             margin-top: 20px;
-            ;
         }
     }
 </style>

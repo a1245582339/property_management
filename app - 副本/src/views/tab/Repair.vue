@@ -73,7 +73,6 @@
         Prop,
         Vue,
     } from 'vue-property-decorator';
-    import Login from '../Login.vue';
     @Component()
     export default class Repair extends Vue {
         statusMap = [{

@@ -10,17 +10,9 @@
         </Sider>
         <Layout>
             <Header class="header">
-                <Breadcrumb>
-                    <BreadcrumbItem to="/">
-                        <Icon type="ios-home-outline"></Icon> Home
-                    </BreadcrumbItem>
-                    <BreadcrumbItem to="/components/breadcrumb">
-                        <Icon type="logo-buffer"></Icon> Components
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>
-                        <Icon type="ios-cafe"></Icon> Breadcrumb
-                    </BreadcrumbItem>
-                </Breadcrumb>
+                <div class="logout">
+                    <Button type="text" @click="logout">退出登录</Button>
+                </div>
             </Header>
             <Content>
                 <router-view />
@@ -31,6 +23,7 @@
 
 <script>
     import SideMenu from '@/components/sideMenu'
+    import { removeToken } from '@/utils/auth'
     import {
         Component,
         Prop,
@@ -46,6 +39,10 @@
     export default class Main extends Vue {
         maxLogo = maxLogo;
         collapsed = false;
+        logout() {
+            removeToken()
+            this.$router.push({path: '/login'})
+        }
         created() {
 
         };
@@ -69,6 +66,9 @@
         }
         .header {
             background-color: #fff;
+            .logout {
+                float: right;
+            }
         }
         .header-con {
             background: #fff;

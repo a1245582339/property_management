@@ -91,6 +91,9 @@ exports.updateUser = async ctx => {
             }
             return total.concat([`${curr}="${user[curr]}"`])
         }, [])).toString()
+        if (user.isDel) {
+            $delUser = ``
+        }
         $sql = `update user set ${setStr} where id="${user.id}";`
     } else {
         $checkNameExist = `select * from user where name="${user.name}"`

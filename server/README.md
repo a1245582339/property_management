@@ -42,7 +42,7 @@ Content-Type:application/json
 }
 ```
 ***
-### 拉取用户信息
+### 拉取管理员用户信息
 
 #### 请求
 ```http
@@ -72,7 +72,7 @@ Content-Type:application/json
 ```
 
 ***
-### 更新/新增/删除用户信息
+### 更新/新增/删除管理员用户信息
 
 #### 请求
 ```http
@@ -103,7 +103,7 @@ Content-Type:application/json
 }
 ```
 ***
-### 获取用户列表
+### 获取管理员列表
 
 #### 请求
 ```http
@@ -113,8 +113,6 @@ GET /adminList
 ```json
 limit: 查询条数
 page: 查询页数
-name: 用户名    // 支持关键字查询
-role: 角色
 ```
 #### 响应
 ```json

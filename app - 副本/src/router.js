@@ -10,6 +10,18 @@ export default new Router({
       redirect: '/main'
     },
     {
+      path: '/404',
+      name: '404',
+      component: () =>
+      import('./views/error-page/404'),
+    },
+    {
+      path: '/401',
+      name: '401',
+      component: () =>
+      import('./views/error-page/401'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,
@@ -62,25 +74,18 @@ export default new Router({
         name: 'Part',
         component: () =>
           import('./views/tab/Part')
+      }, 
+      {
+        path: 'admin',
+        name: 'Admin',
+        component: () =>
+          import('./views/tab/Admin')
       }]
     },
     {
-      path: '/userDetail',
-      name: 'userDetail',
+      path: '*',
       component: () =>
-        import('./views/userDetail'),
+      import('./views/error-page/404'),
     },
-    {
-      path: '/repairDetail',
-      name: 'repairDetail',
-      component: () =>
-        import('./views/repairDetail'),
-    },
-    {
-      path: '/createRepair',
-      name: 'createRepair',
-      component: () =>
-        import('./views/createRepair'),
-    }
   ],
 });
