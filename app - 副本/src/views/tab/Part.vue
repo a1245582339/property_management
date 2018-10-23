@@ -6,6 +6,12 @@
             <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
 
+        <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+                <Page :page-size="10" :total="total" :current="page + 1" @on-change="changePage"></Page>
+            </div>
+        </div>
+
 
         <Modal v-model="Modal" title="编辑" @on-visible-change="visibleChange" :footer-hide="true">
             <Form ref="Form" :model="form" :rules="rules" @keydown.enter.native="submit" :label-width="80"
@@ -51,9 +57,9 @@
         </Modal>
 
         <Modal v-model="showSell" title="出库" @on-visible-change="sellvisibleChange" :footer-hide="true">
-            <Form ref="SellForm" :model="sellForm" :rules="sellRules" @keydown.enter.native="sell" :label-width="80"
+            <Form ref="SellForm" :model="sellForm" :rules="sellRules" @keydown.enter.native="sellSubmit" :label-width="80"
                 label-position="left">
-                <FormItem prop="repair_id" label="报修标题">
+                <FormItem prop="title" label="报修标题">
                     <Select v-model="sellForm.title" filterable remote :remote-method="selectRepairTitle" :loading="searchLoading">
                         <Option v-for="(option, index) in options" :value="option.value" :key="index">{{option.label}}</Option>
                     </Select>
@@ -74,7 +80,7 @@
                 </FormItem>
                 <FormItem style="text-align: right;">
                     <Button size="large" type="text" @click="Modal = false">取消</Button>
-                    <Button size="large" type="primary" style="margin-left: 8px" @click="submit">确认</Button>
+                    <Button size="large" type="primary" style="margin-left: 8px" @click="sellSubmit">确认</Button>
                 </FormItem>
             </Form>
         </Modal>
@@ -85,7 +91,7 @@
 <script>
     import {
         getPart,
-        updataPart
+        updatePart
     } from '@/api/part'
     import {
         getPartType,
@@ -93,6 +99,10 @@
     import {
         getRepair,
     } from '@/api/repair'
+    import {
+        getOrder,
+        updateOrder
+    } from '@/api/order'
     import {
         Component,
         Prop,
@@ -171,8 +181,36 @@
         Modal = false;
         showSell = false;
         form = {};
-        sellForm = {};
-        sellRules = {};
+        sellRules = {
+            title: [{
+                validator: (rule, value, callback) => {
+                    console.log(value)
+                    if (value === '') {
+                        callback(new Error('请输入出库量'));
+                    } else if (!Number.isInteger(value - 0)) {
+                        callback(new Error('库存须为正整数！'));
+                    } else {
+                        callback();
+                    }
+                },
+                trigger: 'blur'
+            }],
+            count: [{
+                validator: (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请输入出库量'));
+                    } else if (!Number.isInteger(value - 0)) {
+                        callback(new Error('库存须为正整数！'));
+                    } else {
+                        callback();
+                    }
+                },
+                trigger: 'blur'
+            }]
+        };
+        sellForm = {
+
+        };
         searchLoading = false;
         options = []
         rules = {
@@ -218,6 +256,12 @@
             }]
         }
 
+        changePage(page) {
+            this.page = page - 1
+            this.spinShow = true
+            this.fetchData()
+        }
+
         edit(row) {
             if (row.id) {
                 this.form.id = row.id
@@ -235,7 +279,7 @@
                     return h('p', `确定删除“${row.part_name}”？`)
                 },
                 onOk: () => {
-                    updataPart({
+                    updatePart({
                         id: row.id,
                         isDel: 1
                     }).then(res => {
@@ -248,15 +292,31 @@
             })
         }
         sell(row) {
-            this.sellForm.part_id = row.id
+            this.sellForm.part_id = row.id;
+            this.sellForm.count = '';
             this.showSell = true
         }
         submit() {
             var vm = this
             this.$refs['Form'].validate(async (valid) => {
                 if (valid) {
-                    this.$Message.success((await updataPart(vm.form)).data.msg)
+                    this.$Message.success((await updatePart(vm.form)).data.msg)
                     this.Modal = false
+                    this.fetchData()
+                }
+            })
+        }
+        sellSubmit() {
+            var vm = this
+            this.$refs['SellForm'].validate(async (valid) => {
+                if (valid) {
+                    var data = {
+                        repair_id: vm.sellForm.title,
+                        part_id: vm.sellForm.part_id,
+                        count: vm.sellForm.count
+                    }
+                    this.$Message.success((await updateOrder(data)).data.msg)
+                    this.showSell = false
                     this.fetchData()
                 }
             })
@@ -274,19 +334,21 @@
 
         }
         async fetchData() {
-            const res = await getPart()
+            const res = await getPart({
+                page: this.page
+            })
             this.partList = res.data.data
+            this.total = res.data.total
             setTimeout(() => {
                 this.spinShow = false
             }, 100)
 
         };
         async selectRepairTitle(query) {
-            console.log(query)
             this.options = (await getRepair({title: query})).data.data.map(item => {
                 return {
                     value: item.id,
-                    label: item.title
+                    label: `${item.title}（${item.id}）`
                 }
             })
         }

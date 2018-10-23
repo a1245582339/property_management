@@ -107,6 +107,11 @@
             icon: "ios-checkmark-circle"
         }];
         columns = [{
+                title: '报修编号',
+                key: 'id',
+                width: 100,
+                fixed: 'left'
+            },{
                 title: '标题',
                 key: 'title',
                 width: 150,

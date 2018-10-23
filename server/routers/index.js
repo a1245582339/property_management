@@ -9,6 +9,7 @@ const user = require('../controller/user.js')
 const room = require('../controller/room.js')
 const repair = require('../controller/repair.js')
 const part = require('../controller/part.js')
+const order = require('../controller/order.js')
 
 /* 管理员 */
 router.post('/admin/login', admin.login)
@@ -39,5 +40,9 @@ router.get('/part', part.getPart)
 router.post('/part', part.updatePart)
 router.get('/partType', part.getPartType)
 router.post('/partType', part.updatePartType)
+
+/* 订单 */
+router.get('/order', order.getOrder)
+router.post('/order', order.createOrder)
 
 module.exports = router
