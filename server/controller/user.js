@@ -92,7 +92,10 @@ exports.updateUser = async ctx => {
             return total.concat([`${curr}="${user[curr]}"`])
         }, [])).toString()
         if (user.isDel) {
-            $delUser = ``
+            $selectRoom = `select room_id from user where id="${user.id}";`
+            let room_id = (await model.operateSql($selectRoom))[0].room_id
+            $updateUser = `update user set isDel=1 where room_id="${room_id}";`
+            await model.operateSql($updateUser)
         }
         $sql = `update user set ${setStr} where id="${user.id}";`
     } else {

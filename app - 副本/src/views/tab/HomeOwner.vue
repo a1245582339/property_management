@@ -14,7 +14,8 @@
 </template>
 <script>
     import {
-        getHomeUsers
+        getHomeUsers,
+        updateUser
     } from '@/api/homeUsers'
     import {
         Component,
@@ -57,6 +58,26 @@
                     }, '暂无')])
                 }
             },
+            {
+                title: '操作',
+                key: 'action',
+                width: 250,
+                align: 'center',
+                render: (h, params) => {
+                    return h('div', [
+                        h('Button', {
+                            props: {
+                                type: 'error',
+                            },
+                            on: {
+                                click: () => {
+                                    this.del(params.row.id)
+                                }
+                            }
+                        }, '删除'),
+                    ]);
+                }
+            }
         ];
         page = 0;
         total = 2;
@@ -66,6 +87,25 @@
             this.page = page - 1
             this.spinShow = true
             this.fetchData()
+        }
+        async del(id) {
+            this.$Modal.confirm({
+                title: '提示',
+                render: (h) => {
+                    return h('p', `确定删除此业主并同时删除其所有家庭成员？`)
+                },
+                onOk: () => {
+                    updateUser({
+                        id: id,
+                        isDel: 1
+                    }).then(res => {
+                        this.$Message.success('删除成功');
+                        this.page = 0
+                        this.fetchData()
+                    })
+
+                }
+            })
         }
         async fetchData() {
             const res = await getHomeUsers({role: 1, page: this.page})

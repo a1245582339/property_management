@@ -5,7 +5,7 @@ exports.getRoom = async ctx => {
     let whereStr = Object.keys(query).reduce((total, curr) => {
         return [...total, `room.${curr}="${query[curr]}"`]
     }, []).join(' and ')
-    let $selectRoom = `select room.*,user.name,user.nick_name,user.tel,user.role from room left join user on user.room_id=room.id ${whereStr ? 'where ' + whereStr : ''}order by room.id` 
+    let $selectRoom = `select room.*,user.name,user.nick_name,user.tel,user.role,user.isDel from room left join user on user.room_id=room.id and user.isDel=0 ${whereStr ? 'where' + whereStr : ''}order by room.id` 
     console.log($selectRoom)
     await model.operateSql($selectRoom).then(res => {
         res = res.filter(item => {
