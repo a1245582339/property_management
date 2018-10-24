@@ -3,7 +3,7 @@
 
         <div class="wrap">
             <Input v-model="searchWord" style="margin-bottom: 20px;width: 50%" search enter-button placeholder="请输入关键词"
-                :on-search="search" />
+                @on-search="search" />
             <Table class="table" border :columns="columns" :data="userList"></Table>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
@@ -315,8 +315,8 @@
         }
 
         async changeStatus(row) {
-            if (row.status < 3 || row.price) {
-                let data = row.price ? row : {
+            if (row.status < 3) {
+                let data = {
                     id: row.id,
                     status: row.status + 1,
                 }
@@ -364,7 +364,7 @@
 
         };
         search() {
-
+            this.fetchData()
         }
         created() {
             this.fetchData()

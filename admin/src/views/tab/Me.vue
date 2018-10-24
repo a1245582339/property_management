@@ -138,6 +138,7 @@
             this.$refs['Form'].validate(async (valid) => {
                 if (valid) {
                     vm.userInfo.password = md5(vm.form.newPassword)
+                    delete vm.userInfo.token
                     this.$Message.success(await vm.$store.dispatch('UPDATE_INFO', vm.userInfo))
                     vm.reset()
                     this.passwordModal = false

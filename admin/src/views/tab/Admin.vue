@@ -185,10 +185,14 @@
                     if (vm.isNew) {
                         vm.form.password = md5('000000')
                     }
-                    
-                    vm.$Message.success(await updateUserInfo(vm.form)).data.msg
-                    this.modelShow = false
-                    vm.fetchData()
+                    var res = await updateUserInfo(vm.form)
+                    if (res.data.code == 20000) {
+                        this.$Message.success(res.data.msg)
+                        this.modelShow = false
+                        vm.fetchData()
+                    } else {
+                        this.$Message.error(res.data.msg)
+                    }
                 } else {
                     this.$Message.error('完善用户信息！');
                 }

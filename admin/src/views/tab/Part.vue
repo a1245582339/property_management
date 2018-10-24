@@ -315,9 +315,14 @@
                         part_id: vm.sellForm.part_id,
                         count: vm.sellForm.count
                     }
-                    this.$Message.success((await updateOrder(data)).data.msg)
-                    this.showSell = false
-                    this.fetchData()
+                    var res = await updateOrder(data)
+                    if (res.data.code == 20000) {
+                        this.$Message.success(res.data.msg)
+                        this.showSell = false
+                        this.fetchData()
+                    } else {
+                        
+                    }
                 }
             })
         }
