@@ -106,7 +106,7 @@
         }
         async fetchData() {
             const res = await getHomeUsers({
-                role: 2,
+                role: 1,
                 page: this.page,
             })
             this.userList = res.data.data.map(item => {

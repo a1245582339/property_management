@@ -7,9 +7,18 @@ exports.getRepair = async ctx => {
     var query = ctx.request.query
     var page = query.page || 0
     var limit = query.limit || 10
+    if (query.room_id) {
+        let user_ids = (await model.operateSql(`select id from user where room_id=${query['room_id']}`)).map(item => item.id)
+        var userStr = user_ids.reduce((total, curr) => {
+            return [...total, `user_id=${curr}`]
+        }, []).join(' or ')
+    }
     var whereStr = Object.keys(query).reduce((total, curr) => {
         if (curr == 'page' || curr == 'limit') {
             return total
+        }
+        if (curr == 'room_id') {
+            return [...total, userStr]
         }
         if (curr == 'title') {
             return [...total, `${curr} like "%${query[curr]}%"`]
@@ -20,8 +29,8 @@ exports.getRepair = async ctx => {
     const count = await model.operateSql($selectCount)
     let $selectRepair = `select repair_list.*,user.name,user.tel,room_num,building from (user right join room on user.room_id=room.id) right join repair_list on repair_list.user_id=user.id ${whereStr.length ? ' where ' + whereStr : ''} order by status desc limit ${limit} offset ${page * limit}`
     await model.operateSql($selectRepair).then(res => {
-        for(let i = 0; i < res.length; i ++) {
-            if(res[i].photos) {
+        for (let i = 0; i < res.length; i++) {
+            if (res[i].photos) {
                 res[i].photos = JSON.stringify(JSON.parse(res[i].photos).map(item => `http://${hostname}:3000${item}`))
             }
         }
@@ -42,7 +51,7 @@ exports.getRepair = async ctx => {
 
 exports.creatRepair = async ctx => {
     var data = ctx.request.body
-    
+
     let $createRepair = `insert into repair_list (title,status,photos,user_id,create_time) value ("${data.title}","1",'${data.photos ? data.photos : ''}',"${data.user_id}","${(new Date()).getTime()}")`
     await model.operateSql($createRepair).then(res => {
         ctx.body = {

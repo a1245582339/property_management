@@ -4,7 +4,7 @@
         <div class="wrap">
             <Input v-model="searchWord" style="margin-bottom: 20px;width: 50%" search enter-button placeholder="请输入关键词"
                 :on-search="search" />
-            <Table class="table" border :columns="columns" :data="userList" width="1100"></Table>
+            <Table class="table" border :columns="columns" :data="userList"></Table>
             <Spin size="large" fix v-if="spinShow"></Spin>
         </div>
 
@@ -227,7 +227,7 @@
                             },
                             on: {
                                 click: () => {
-                                    this.showPart(params.row)
+                                    this.showCarousel(params.row)
                                 }
                             }
                         }, '图片'),
@@ -261,10 +261,10 @@
         rules = {
             price: [{
                 validator: (rule, value, callback) => {
-                    if (value == '') {
+                    if (value === '') {
                         callback(new Error('请输入报价'));
-                    } else if (!(value > 0)) {
-                        callback(new Error('价格须为正数!'));
+                    } else if (!(value >= 0)) {
+                        callback(new Error('价格须为非负数!'));
                     } else {
                         callback();
                     }
@@ -298,9 +298,10 @@
 
         submit() {
             var vm = this
+            console.log(JSON.stringify(this.form))
             this.$refs['Form'].validate(async (valid) => {
                 if (valid) {
-                    await vm.changeStatus(vm.form)
+                    await vm.updataRepair(vm.form)
                     this.showPartModel = false
                     this.fetchData()
                 }
@@ -330,9 +331,10 @@
                     }
                 });
             } else {
+                this.showPartModel = true
                 this.form.id = row.id
                 this.form.status = row.status + 1
-                this.showPartModel = true
+                console.log(JSON.stringify(this.form))
             }
         }
 

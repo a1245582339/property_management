@@ -7,7 +7,7 @@
         </div>
 
 
-        <Modal v-model="Modal" title="修改零件类型" @on-visible-change="visibleChange" :footer-hide="true">
+        <Modal v-model="Modal" title="编辑零件类型" @on-visible-change="visibleChange" :footer-hide="true">
             <Form ref="Form" :model="form" :rules="rules" @keydown.enter.native="submit" :label-width="100">
                 <FormItem prop="type_name" label="零件类型名称">
                     <Input type="text" v-model="form.type_name" placeholder="请输入新的零件类型名称">

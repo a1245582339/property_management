@@ -67,7 +67,7 @@
                         path: '/'
                     })
                 } else {
-                    this.$Message.error('登录成功')
+                    this.$Message.error('用户名或密码错误')
                 }
             });
         };

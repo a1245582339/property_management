@@ -9,7 +9,7 @@ exports.getRoom = async ctx => {
     console.log($selectRoom)
     await model.operateSql($selectRoom).then(res => {
         res = res.filter(item => {
-            return item.role != 0 && item.role != 2
+            return item.role != 0 && item.role != 1
         })
         
         ctx.body =  {

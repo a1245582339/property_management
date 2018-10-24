@@ -34,7 +34,7 @@
                     </Input>
                 </FormItem>
                 <FormItem style="text-align: right;">
-                    <Button size="large" type="text" @click="reset">取消</Button>
+                    <Button size="large" type="text" @click="passwordModal = false; passwordCorrect = false">取消</Button>
                     <Button size="large" type="primary" style="margin-left: 8px" @click="submit">确认</Button>
                 </FormItem>
             </Form>

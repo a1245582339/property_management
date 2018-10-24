@@ -152,7 +152,7 @@ import md5 from 'js-md5'
             tel: [{
                 validator: (rule, value, callback) => {
                     if (value === '') {
-                        callback(new Error('请输入密码！'));
+                        callback(new Error('请输入手机号！'));
                     } else if (!/^1[34578]\d{9}$/.test(value)) {
                         callback(new Error('请输入正确手机号！'));
                     }
@@ -196,7 +196,7 @@ import md5 from 'js-md5'
             this.$refs['Form'].validate(async (valid) => {
                 if (valid) {
                     vm.form.password = md5(vm.form.password)
-                    vm.form.role = 1
+                    vm.form.role = 2
                     vm.$Message.success(await updateUser(vm.form))
                     vm.reset()
                     this.modalShow = false
