@@ -1,6 +1,6 @@
 <template>
     <div>
-        <van-nav-bar title="标题" left-text="返回" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
+        <van-nav-bar title="新增" left-text="返回" left-arrow @click-left="onClickLeft" @click-right="onClickRight">
             <span v-if="title" style="color: #4991ff" slot="right">提交</span>
         </van-nav-bar>
         <van-cell-group>

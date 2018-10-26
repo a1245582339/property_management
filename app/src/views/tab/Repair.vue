@@ -10,7 +10,7 @@
             <div>
                 <no-data v-if="repairList.length == 0" />
                 <van-list v-else v-model="Listloading" :finished="finished" @load="onLoad">
-                    <van-card v-for="(item, index) in repairList" :key="index" tag="标签" :price="item.price || '暂无报价'"
+                    <van-card v-for="(item, index) in repairList" :key="index" :price="item.price || '暂无报价'"
                         :desc="statusMap.find(i => i.status == item.status ).text" :title="item.title" :thumb="item.photos && item.photos.length != 0 ? JSON.parse(item.photos)[0] : defaultImg">
                         <div slot="footer">
                             <van-button size="mini" @click="$router.push({name: 'repairDetail', params: item})">查看详情</van-button>
