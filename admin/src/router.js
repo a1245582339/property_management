@@ -74,6 +74,11 @@ export default new Router({
         name: 'Part',
         component: () =>
           import('./views/tab/Part')
+      }, {
+        path: 'order',
+        name: 'Order',
+        component: () =>
+          import('./views/tab/Order')
       }, 
       {
         path: 'admin',

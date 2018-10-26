@@ -28,6 +28,7 @@
             </template>
             <MenuItem name="PartType" :to="{name: 'PartType'}"><Icon type="ios-briefcase" /><span>零件类型管理</span></MenuItem>
             <MenuItem name="Part" :to="{name: 'Part'}"><Icon type="ios-build" /><span>零件管理</span></MenuItem>
+            <MenuItem name="Order" :to="{name: 'Order'}"><Icon type="ios-build" /><span>出库管理</span></MenuItem>
         </Submenu>
         <MenuItem v-if="$store.state.user.role == 1" name="Admin" :to="{name: 'Admin'}">
             <Icon type="logo-octocat" />
