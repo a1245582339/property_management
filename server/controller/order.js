@@ -7,21 +7,13 @@ exports.getOrder = async ctx => {
         if (curr == 'page' || curr == 'limit') {
             return total
         }
-        if (curr == 'title') {
-            return [...total, `${curr} like "%${query[curr]}%"`]
-        }
-        return [...total, `${curr}="${query[curr]}"`]
     }, []).join(' and ')
-    let $selectRepair = `select repair_list.*,user.name,user.tel,room_num,building from (user right join room on user.room_id=room.id) right join repair_list on repair_list.user_id=user.id ${whereStr.length ? ' where ' + whereStr : ''} order by status desc limit ${limit} offset ${page * limit}`
-    await model.operateSql($selectRepair).then(res => {
-        for (let i = 0; i < res.length; i++) {
-            if (res[i].photos) {
-                res[i].photos = JSON.stringify(JSON.parse(res[i].photos).map(item => `http://${hostname}:3000${item}`))
-            }
-        }
+    let $selectCount = `select count(*) from part part_order ${whereStr ? ' where ' + whereStr : ''}`
+    let $selectOrder = `select part_order.*,part.part_name,repair_list.title from part_order,part,repair_list where part_order.part_id=part.id and part_order.repair_id=repair_list.id ${whereStr.length ?  'and' + whereStr : ''} limit ${limit} offset ${page * limit}`
+    await model.operateSql($selectOrder).then(res => {
         ctx.body = {
             code: 20000,
-            msg: '维修列表',
+            msg: '零件列表',
             data: res
         }
     }).catch(err => {
