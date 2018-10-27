@@ -634,7 +634,7 @@ isDel: 删除     // 0:未删, 1: 已删
 ### 新建/更新/删除零件订单
 #### 请求
 ```http
-GET /order
+POST /order
 ```
 #### 参数
 ```
@@ -648,5 +648,65 @@ count: 出库量
     "code": 20000,
     "msg": "更新成功"
 }
+```
+***
+### 获取零件订单
+#### 请求
+```http
+GET /order
+```
+#### 参数
+```
+limit: 查询条数
+page: 查询页数
+```
+#### 响应
+```json
+{
+    "code":20000,
+    "msg":"零件列表",
+    "data":[{
+            "id":4,
+            "repair_id":1,
+            "part_id":7,
+            "count":50,
+            "part_name":"一字改锥",
+            "title":"title test"
+        },{
+            "id":5,
+            "repair_id":1,
+            "part_id":8,
+            "count":1,
+            "part_name":"新类型零件",
+            "title":"title test"
+        },{
+            "id":6,
+            "repair_id":30,
+            "part_id":8,
+            "count":10,
+            "part_name":"新类型零件",
+            "title":"测试1"
+        },{
+            "id":7,
+            "repair_id":30,
+            "part_id":8,
+            "count":10,
+            "part_name":"新类型零件",
+            "title":"测试1"
+        },{
+            "id":8,
+            "repair_id":30,
+            "part_id":8,
+            "count":1,
+            "part_name":"新类型零件",
+            "title":"测试1"
+        },{
+            "id":9,
+            "repair_id":31,
+            "part_id":9,
+            "count":50,
+            "part_name":"测试零件",
+            "title":"测试新增"
+        }]}
 ```
 ***
