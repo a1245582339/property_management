@@ -8,13 +8,15 @@ exports.getOrder = async ctx => {
             return total
         }
     }, []).join(' and ')
-    let $selectCount = `select count(*) from part part_order ${whereStr ? ' where ' + whereStr : ''}`
+    let $selectCount = `select count(*) from part_order ${whereStr ? ' where ' + whereStr : ''}`
+    const count = await model.operateSql($selectCount)
     let $selectOrder = `select part_order.*,part.part_name,repair_list.title from part_order,part,repair_list where part_order.part_id=part.id and part_order.repair_id=repair_list.id ${whereStr.length ?  'and' + whereStr : ''} limit ${limit} offset ${page * limit}`
     await model.operateSql($selectOrder).then(res => {
         ctx.body = {
             code: 20000,
             msg: '零件列表',
-            data: res
+            data: res,
+            total: count[0]['count(*)']
         }
     }).catch(err => {
         console.log(err)
