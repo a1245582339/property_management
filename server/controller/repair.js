@@ -1,7 +1,7 @@
 const model = require('../lib/mysql.js')
 const fs = require("fs");
 const os = require("os");
-const hostname = os.networkInterfaces().WLAN.find(item => item.family == 'IPv4').address
+// const hostname = os.networkInterfaces().WLAN.find(item => item.family == 'IPv4').address
 
 exports.getRepair = async ctx => {
     var query = ctx.request.query
@@ -32,7 +32,7 @@ exports.getRepair = async ctx => {
     await model.operateSql($selectRepair).then(res => {
         for (let i = 0; i < res.length; i++) {
             if (res[i].photos) {
-                res[i].photos = JSON.stringify(JSON.parse(res[i].photos).map(item => `http://${hostname}:3000${item}`))
+                res[i].photos = JSON.stringify(JSON.parse(res[i].photos).map(item => `http://localhost:3000${item}`))
             }
         }
         ctx.body = {
