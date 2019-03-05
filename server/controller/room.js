@@ -30,7 +30,6 @@ exports.getRoom = async ctx => {
             data: res
         }
     }).catch(err => {
-        throw err
         ctx.body = {
             code: -1,
             msg: '查询失败'
