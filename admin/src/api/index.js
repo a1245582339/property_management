@@ -1,6 +1,6 @@
 import axios from 'axios';
 const http = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: `http://${location.hostname}:3000`,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',

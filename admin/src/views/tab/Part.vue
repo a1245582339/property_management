@@ -185,12 +185,10 @@
             title: [{
                 validator: (rule, value, callback) => {
                     console.log(value)
-                    if (value === '') {
-                        callback(new Error('请输入出库量'));
-                    } else if (!Number.isInteger(value - 0)) {
-                        callback(new Error('库存须为正整数！'));
-                    } else {
+                    if (value) {
                         callback();
+                    } else {
+                        callback(new Error('请选择报修标题！'));
                     }
                 },
                 trigger: 'blur'

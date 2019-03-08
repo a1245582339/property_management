@@ -5,7 +5,7 @@
             <span v-else-if="repairInfo.status == 4" style="color: #ff4444" slot="right">缴费</span>
         </van-nav-bar>
         <van-cell-group>
-            <van-cell title="标题" :value="repairInfo.name" />
+            <van-cell title="标题" :value="repairInfo.title" />
             <van-cell title="创建时间" :value="timestampToTime(repairInfo.create_time)" />
             <van-cell v-if="repairInfo.status > 2" title="派修时间" :value="timestampToTime(repairInfo.appointment_time)" />
             <van-cell v-if="repairInfo.status == 5" title="支付时间" :value="timestampToTime(repairInfo.pay_time)" />

@@ -5,7 +5,7 @@
         </van-nav-bar>
         <van-cell-group>
             <van-cell title="用户名" :value="userInfo.name" />
-            <van-cell title="昵称" :value="userInfo.nick_name || '未填写'" />
+            <van-cell title="姓名" :value="userInfo.nick_name || '未填写'" />
             <van-cell title="性别" :value="userInfo.sex == 0 ? '男' : '女'" />
             <van-cell title="手机号" :value="userInfo.tel" />
             <van-cell title="角色" :value="roleMap.find(i => i.role == userInfo.role).text" />

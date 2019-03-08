@@ -3,7 +3,7 @@
         <p>用户注册</p>
         <van-cell-group class="form">
             <van-field v-model="form.name" required clearable label="用户名" placeholder="请输入用户名" :error-message="/^[a-zA-Z][a-zA-Z0-9_]{4,15}$/.test(form.name) ? '' : '字母开头，允许5-16字节，允许字母数字下划线'" />
-            <van-field v-model="form.nick_name" clearable label="昵称" placeholder="请输入昵称" />
+            <van-field v-model="form.nick_name" clearable label="姓名" placeholder="请输入姓名" />
             <van-field v-model="form.password" type="password" label="密码" placeholder="请输入密码" required :error-message="/^[a-zA-Z]\w{5,17}$/.test(form.password) ? '' : '以字母开头，长度在6~18之间，只能包含字母、数字和下划线'" />
             <van-field v-model="form.tel" label="手机号" placeholder="请输入手机号" required :error-message="/^1[34578]\d{9}$/.test(form.tel) ? '' : '请输入正确格式手机号码'" />
             <van-cell title="所属房间" is-link :value="selectRoom || '请选择'" @click="showRoom = true" />
@@ -67,7 +67,7 @@
         };
         register() {
             const form = {...this.form}
-            if (/^[a-zA-Z][a-zA-Z0-9_]{4,15}$/.test(form.name) && /^[a-zA-Z]\w{5,17}$/.test(form.password) && /^1[34578]\d{9}$/.test(form.tel) && form.room_id && form.sex) {
+            if (/^[a-zA-Z][a-zA-Z0-9_]{4,15}$/.test(form.name) && /^[a-zA-Z]\w{5,17}$/.test(form.password) && /^1[34578]\d{9}$/.test(form.tel) && form.room_id && form.sex && form.nick_name) {
                 form.password = md5(form.password)
                 createUser(form).then(res => {
                     if (res.data.code == '20000') {

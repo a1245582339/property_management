@@ -11,7 +11,7 @@
                     </span>
                     </Input>
                 </FormItem>
-                <FormItem prop="nick_name" label="昵称">
+                <FormItem prop="nick_name" label="姓名">
                     <Input type="text" v-model="form.nick_name" placeholder="请输入用户名">
                     <span slot="prepend">
                         <Icon :size="14" type="logo-octocat" />

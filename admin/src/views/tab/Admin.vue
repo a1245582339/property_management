@@ -30,7 +30,7 @@
                 <FormItem prop="role" label="角色">
                     <RadioGroup v-model="form.role">
                         <Radio :label="1">超级管理员</Radio>
-                        <Radio :label="2">管理员</Radio>
+                        <Radio :label="2">维修员工</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem style="text-align: right;">
@@ -67,7 +67,7 @@
                     value: 1
                 },
                 {
-                    label: '管理员',
+                    label: '维修员工',
                     value: 2
                 }
             ],
@@ -76,7 +76,7 @@
                 return row.role == value
             },
             render: (h, params) => {
-                return h('div', params.row.role == 1 ? '超级管理员' : '管理员')
+                return h('div', params.row.role == 1 ? '超级管理员' : '维修员工')
             }
         }, {
             title: '操作',
@@ -111,7 +111,7 @@
                             click: async () => {
                                 this.$Modal.confirm({
                                     title: '提醒',
-                                    content: '<p>确认删除此管理员？</p>',
+                                    content: '<p>确认删除此员工？</p>',
                                     loading: true,
                                     onOk: async () => {
                                         await updateUserInfo({

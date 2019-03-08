@@ -4,7 +4,7 @@ import router from './router'
 import store from '@/store/index'
 import './permission'
 import Vant from 'vant';
-import 'vant/lib/vant-css/index.css';
+import 'vant/lib/index.css';
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 

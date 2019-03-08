@@ -29,7 +29,7 @@
                 key: 'name'
             },
             {
-                title: '昵称',
+                title: '姓名',
                 key: 'nick_name',
                 render: (h, params) => {
                     return params.row.nick_name ? h('div', params.row.nick_name) : h('div', [h('span', {

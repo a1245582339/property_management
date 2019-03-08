@@ -9,7 +9,7 @@
             <van-field label="密码" v-model="userInfo.password" type='password' disabled>
                 <van-button slot="button" size="small" type="primary" @click="dialogShow = true">修改密码</van-button>
             </van-field>
-            <van-field label="昵称" v-model="userInfo.nick_name" placeholder="请输入昵称" />
+            <van-field required label="姓名" v-model="userInfo.nick_name" placeholder="请输入姓名" />
             <van-field required label="手机号" v-model="userInfo.tel" placeholder="请输入手机号" :error-message="/^1[34578]\d{9}$/.test(userInfo.tel) ? '' : '手机号格式错误'" />
         </van-cell-group>
         <van-button type="danger" style="width: 90%; postition: absolute; left: 50%; transform: translate(-50%, 20px)"
@@ -54,6 +54,10 @@
         newPassword = '';
         repeatPassword = '';
         async onClickRight() {
+            if (!this.userInfo.nick_name) {
+                Toast.fail('请输入姓名！');
+                return false
+            }
             if (/^1[34578]\d{9}$/.test(this.userInfo.tel)) {
                 Toast.success(await this.$store.dispatch('UPDATE_INFO', this.userInfo));
             } else {
