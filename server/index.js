@@ -37,23 +37,23 @@ app.use(koaStatic(
 ))
 // 缓存
 app.use(staticCache(path.join(__dirname, './public'), { dynamic: true }, {
-  maxAge: 365 * 24 * 60 * 60
+  maxAge: 365 * 24 * 60 * 60  // 静态文件缓存，提高性能
 }))
 app.use(staticCache(path.join(__dirname, './images'), { dynamic: true }, {
-  maxAge: 365 * 24 * 60 * 60
+  maxAge: 365 * 24 * 60 * 60 
 }))
 
 // 配置服务端模板渲染引擎中间件
 app.use(views(path.join(__dirname, './views'), {
-  extension: 'ejs'
+  extension: 'ejs'  // 用不上
 }))
 app.use(bodyParser({
-  formLimit: '1mb'
+  formLimit: '1mb'  // 请求体不允许超过1MB，避免攻击
 }))
 
 //  路由
 app.use(require('./routers/index.js').routes())
 
-app.listen(3000)
+app.listen(3000)  // 监听3000端口
 
 console.log(`listening on port ${config.port}`)
