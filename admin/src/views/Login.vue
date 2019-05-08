@@ -30,7 +30,7 @@
 
 
 <script>
-    import md5 from 'js-md5'
+    import md5 from 'js-md5'    // md5加密工具
     import {
         Component,
         Prop,
@@ -39,12 +39,12 @@
 
     @Component
     export default class Login extends Vue {
-        form = {
+        form = {    // 登录表单项
             userName: 'ddd',
             password: 'aaaaaa'
         }
-        rules = {
-            userName: [{
+        rules = {   // 表单验证规则
+            userName: [{    
                 required: true,
                 message: '账号不能为空',
                 trigger: 'blur'
@@ -55,19 +55,19 @@
                 trigger: 'blur'
             }
         }
-        login() {
+        login() {   // 登录方法
             const vm = this;
-            this.$store.dispatch('LOGIN', {
-                name: vm.form.userName,
-                password: md5(vm.form.password)
-            }).then(res => {
-                if (res.data.code == '20000') {
-                    this.$Message.success('登录成功')
-                    vm.$router.push({
+            this.$store.dispatch('LOGIN', {     // 发送登录请求
+                name: vm.form.userName,     // 用户名
+                password: md5(vm.form.password)     // 加密后的密码
+            }).then(res => {    // 登录成功后
+                if (res.data.code == '20000') {     // 如果返回的code是20000
+                    this.$Message.success('登录成功')   // 那么提示登录成功
+                    vm.$router.push({   // 跳转至首页
                         path: '/'
                     })
-                } else {
-                    this.$Message.error('用户名或密码错误')
+                } else {    // 如果code不是20000
+                    this.$Message.error('用户名或密码错误')     // 提示错误
                 }
             });
         };

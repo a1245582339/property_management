@@ -49,11 +49,11 @@
         Vue,
     } from 'vue-property-decorator';
     @Component({
-        filters: {
-            passwordHide(password) {
+        filters: {  // 过滤器
+            passwordHide(password) {    // 用来把密码变成 ●●●●●●●●●●●●
                 let str = ''
                 for (let i = 0; i < password.length; i++) {
-                    str += '●'
+                    str += '●'  // 把密码变成等长度的 ●
                 }
                 return str
             }
@@ -62,12 +62,12 @@
 
     export default class Main extends Vue {
 
-        roleMap = [{
+        roleMap = [{    // 权限的角色的值和权限名称的对应关系
             role: 1,
             text: '超级管理员'
         }, {
             role: 2,
-            text: '维修员工'
+            text: '管理员'
         }];
         userInfo = { ...this.$store.state.user
         };
