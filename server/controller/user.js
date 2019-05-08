@@ -1,13 +1,14 @@
 const model = require('../lib/mysql.js')
 
 exports.login = async ctx => {
-    let data = ctx.request.body
+    let data = ctx.request.body // 获取请求体
+    // 查询要请求的用户名与密码，并且是没被删除的人
     let $selectUser = `select * from user where name="${data.name}" and password="${data.password}" and isDel=0;`
-    let user = await model.operateSql($selectUser)
-    if (user.length) {
-        let token = `${(new Date()).getTime()}token${data.name}`
-        let $createToken = `insert into user_token (token, deadline, user_id) value ("${token}", "${(new Date()).getTime() + 604800000}", ${user[0].id})`
-        await model.operateSql($createToken).then(res => {
+    let user = await model.operateSql($selectUser)  // 开始查询数据库
+    if (user.length) {  // 如果查到了
+        let token = `${(new Date()).getTime()}token${data.name}`    // 创建一个token
+        let $createToken = `insert into user_token (token, deadline, user_id) value ("${token}", "${(new Date()).getTime() + 604800000}", ${user[0].id})`   // 把token插到token表里
+        await model.operateSql($createToken).then(res => {  // 创建成功后返回
             ctx.body = {
                 code: 20000,
                 msg: '创建token成功',
@@ -16,7 +17,7 @@ exports.login = async ctx => {
                 }
             }
         })
-    } else {
+    } else {    // 如果用户名密码失败后返回
         ctx.body = {
             code: 20003,
             msg: '用户名或密码错误'
@@ -25,28 +26,28 @@ exports.login = async ctx => {
 }
 
 exports.getUserInfo = async ctx => {
-    // console.log(ctx.request.query)
-    let token = ctx.request.query.token
-    let $selectStuId = `select user_id from user_token where token="${token}" and deadline>${(new Date()).getTime()}`
-    try {
-        var user_id = await model.operateSql($selectStuId)
-        if (!user_id.length) {
-            throw ''
+    // 获取用户信息
+    let token = ctx.request.query.token // 获取请求体中的用户信息
+    let $selectStuId = `select user_id from user_token where token="${token}" and deadline>${(new Date()).getTime()}`   // 在token表里查询token为请求体内token的并且没过期的token
+    try {   // 尝试
+        var user_id = await model.operateSql($selectStuId)  // 开始查询
+        if (!user_id.length) {  // 如果没查到
+            throw ''    // 直接抛出错误
         }
-    } catch (err) {
-        ctx.body = {
+    } catch (err) { // 如果查询失败
+        ctx.body = {    // 报token失效
             code: 20002,
             msg: 'token已失效'
         }
         return false
     }
 
-    let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[0].user_id}`
-    await model.operateSql($selectUserInfo).then(res => {
-        res[0].id = user_id[0].user_id
-        if (res[0].role == '0') {
+    let $selectUserInfo = `select user.*,room.* from user left join room on user.room_id=room.id where user.id=${user_id[0].user_id}`   // 查询用户id为上面查询到的userid的用户和房间
+    await model.operateSql($selectUserInfo).then(res => {   // 开始查询
+        res[0].id = user_id[0].user_id  // 把请求结果的userid改名为id赋给结果
+        if (res[0].role == '0') {   // 如果这是个未验证的用户
 
-            ctx.body = {
+            ctx.body = {    // 那就只把用户信息返回给前端
                 code: 20000,
                 msg: '用户信息',
                 data: {
@@ -61,8 +62,8 @@ exports.getUserInfo = async ctx => {
                     }
                 }
             }
-        } else {
-            ctx.body = {
+        } else {    // 如果验证了
+            ctx.body = {    // 直接把所有信息返回
                 code: 20000,
                 msg: '用户信息',
                 data: {
