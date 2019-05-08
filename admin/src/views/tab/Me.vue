@@ -67,7 +67,7 @@
             text: '超级管理员'
         }, {
             role: 2,
-            text: '维修员工'
+            text: '管理员'
         }];
         userInfo = { ...this.$store.state.user
         };
