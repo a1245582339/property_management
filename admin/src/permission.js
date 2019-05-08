@@ -12,7 +12,7 @@ Vue.use(Toast)
 const whiteList = ['/login', '/register'] // 不重定向白名单
 
 router.beforeEach((to, from, next) => {
-    if (getToken() && getToken() != 'undefined') {
+    if (getToken() && getToken() != 'undefined') {  // 有token
         if (to.path === '/login') {
             next({
                 path: '/main'

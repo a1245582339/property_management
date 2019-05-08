@@ -17,6 +17,7 @@ exports.getPart = async ctx => {
     let $selectCount = `select count(*) from part where isDel=0 ${whereStr ? ' and ' + whereStr : ''}`
     const count = await model.operateSql($selectCount)
     let $selectPart = `select part.*,part_type.type_name from part left join part_type on part.type_id=part_type.id where part.isDel=0 ${whereStr ? 'and ' + whereStr : ''} limit ${limit} offset ${page * limit}`
+    
     await model.operateSql($selectPart).then(res => {
         ctx.body = {
             code: 20000,
