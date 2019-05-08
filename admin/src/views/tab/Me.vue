@@ -69,25 +69,25 @@
             role: 2,
             text: '管理员'
         }];
-        userInfo = { ...this.$store.state.user
+        userInfo = { ...this.$store.state.user  // 获取存在全局变量里的用户信息
         };
         loginForm = {
-            newPassword: [{
+            newPassword: [{ // 验证新密码合法性的规则
                 validator: (rule, value, callback) => {
-                    let val = this.form.newPassword
+                    let val = this.form.newPassword     // 
                     if (value === '') {
                         callback(new Error('请输入密码！'));
-                    } else if (!/^[a-zA-Z]\w{5,17}$/.test(val)) {
+                    } else if (!/^[a-zA-Z]\w{5,17}$/.test(val)) {   // 验证密码的正则表达式
 
                         callback(new Error('以字母开头，长度在6~18之间，只能包含字母、数字和下划线！'));
-                    } else if (this.form.repeatPassword !== '') {
+                    } else if (this.form.repeatPassword !== '') {   // 如果重复密码的输入框里也写东西了，那么需要验证一下两次密码是否一致
                         this.$refs['Form'].validateField('repeatPassword');
                     }
-                    callback();
+                    callback(); // 如果验证都通过了，那么就不提示错误
                 },
-                trigger: 'blur'
+                trigger: 'blur'     // 当输入框失去焦点的时候触发以上验证
             }],
-            repeatPassword: [{
+            repeatPassword: [{  // 
                 validator: (rule, value, callback) => {
                     let val = this.form.repeatPassword
                     if (val === '') {
@@ -101,55 +101,55 @@
                 trigger: 'blur'
             }],
         }
-        form = {
-            oldPassword: '',
-            newPassword: '',
-            repeatPassword: '',
+        form = {    // 修改密码的表单
+            oldPassword: '',    // 旧密码
+            newPassword: '',    // 新密码
+            repeatPassword: '',     // 重复密码
         }
-        passwordModal = false;
-        passwordCorrect = false;
-        modalShow() {
-            this.passwordModal = true;
+        passwordModal = false;  // 控制密码模态框是否显示
+        passwordCorrect = false;    // 旧密码校验是否通过
+        modalShow() {   // 点击修改密码时调用的方法
+            this.passwordModal = true;  // 让模态框显示
         }
-        visibleChange() {
-            this.reset()
+        visibleChange() {   // 当模态框显示状态变化时调用的方法
+            this.reset()    // 重置密码校验与内容
         }
-        async checkPassword() {
-            let res = await this.$store.dispatch('CHECK_PASSWORD', md5(this.form.oldPassword))
-            if (res.code == '20000') {
-                this.passwordCorrect = true
-                this.$Message.success(res.msg);
+        async checkPassword() {     // 检验旧密码
+            let res = await this.$store.dispatch('CHECK_PASSWORD', md5(this.form.oldPassword))    // 发起检验密码请求
+            if (res.code == '20000') {  // 如果检验结果返回的code是20000
+                this.passwordCorrect = true // 那么把通过状态改为true
+                this.$Message.success(res.msg);     // 弹出校验成功的提示
             } else {
-                this.passwordCorrect = false
-                this.$Message.error(res.msg);
+                this.passwordCorrect = false    // 否则校验失败
+                this.$Message.error(res.msg);   // 弹出失败提示
             }
 
         }
-        reset() {
-            this.$refs['Form'].resetFields()
+        reset() {   // 重置密码框的方法
+            this.$refs['Form'].resetFields()       // 重置模态框
         }
-        submit() {
-            const vm = this
-            if (!this.passwordCorrect) {
+        submit() {  // 提交密码的方法
+            const vm = this     
+            if (!this.passwordCorrect) {    // 如果密码校验没成功
                 this.$Message.error('请先验证密码！');
                 return
             }
 
-            this.$refs['Form'].validate(async (valid) => {
-                if (valid) {
-                    vm.userInfo.password = md5(vm.form.newPassword)
-                    delete vm.userInfo.token
-                    this.$Message.success(await vm.$store.dispatch('UPDATE_INFO', vm.userInfo))
-                    vm.reset()
-                    this.passwordModal = false
+            this.$refs['Form'].validate(async (valid) => {  // 密码校验成功后验证新旧密码是否符合规范
+                if (valid) {    // 如果通过了校验
+                    vm.userInfo.password = md5(vm.form.newPassword)     // 对密码进行加密
+                    delete vm.userInfo.token  
+                    this.$Message.success(await vm.$store.dispatch('UPDATE_INFO', vm.userInfo))     // 发送更新用户信息（修改密码）的请求，成功后弹出成功提示
+                    vm.reset()  // 重置密码输入框
+                    this.passwordModal = false  // 关闭输入框
                 } else {
-                    this.$Message.error('请输入正确密码');
+                    this.$Message.error('请输入正确密码');  // 如果没通过校验，提示
                 }
             })
         }
-        async logOut() {
-            await this.$store.dispatch('LOG_OUT')
-            this.$router.push({
+        async logOut() {    // 登出方法
+            await this.$store.dispatch('LOG_OUT')     // 登出
+            this.$router.push({ // 跳转回login页面
                 path: '/login'
             })
         }

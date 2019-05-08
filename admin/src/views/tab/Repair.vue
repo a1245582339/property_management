@@ -59,14 +59,14 @@
 <script>
     import moment from 'moment'
     import {
-        getRepair,
-        changeRepair
+        getRepair,  // 获取报修列表
+        changeRepair    // 更新报修信息
     } from '@/api/repair'
     import {
-        getPart,
+        getPart,    // 获取零件
     } from '@/api/part'
     import {
-        getPartType,
+        getPartType,    // 获取零件类型
     } from '@/api/partType'
     import {
         Component,
@@ -75,7 +75,7 @@
     } from 'vue-property-decorator';
     @Component()
     export default class Repair extends Vue {
-        statusMap = [{
+        statusMap = [{  // 维修状态对应的数据，将状态的码值转换为文字和不同演示的图标
             value: 0,
             label: '已撤消',
             color: '#c5c8ce',
@@ -106,7 +106,7 @@
             color: '#19be6b',
             icon: "ios-checkmark-circle"
         }];
-        columns = [{
+        columns = [{    // 表头
                 title: '报修编号',
                 key: 'id',
                 width: 100,
@@ -124,16 +124,16 @@
                 render: (h, params) => {
                     return h('div', [h('Icon', {
                         props: {
-                            type: this.statusMap.find(item => params.row.status == item.value).icon,
-                            color: this.statusMap.find(item => params.row.status == item.value)
+                            type: this.statusMap.find(item => params.row.status == item.value).icon,    // 显示状态对应的小图标
+                            color: this.statusMap.find(item => params.row.status == item.value) // 图标的颜色
                                 .color
                         },
                     }), h('span', {},
-                        `  ${this.statusMap.find(item => params.row.status == item.value)
+                        `  ${this.statusMap.find(item => params.row.status == item.value)   // 显示状态对应的文字
                         .label}`
                     )])
                 },
-                filters: this.statusMap,
+                filters: this.statusMap,    // 可以筛选状态
                 filterMethod(value, row) {
                     return row.status == value
                 },
@@ -161,7 +161,7 @@
                 key: 'create_time',
                 width: 150,
                 render: (h, params) => {
-                    return params.row.create_time ? h('div', moment(params.row.create_time - 0).format(
+                    return params.row.create_time ? h('div', moment(params.row.create_time - 0).format( // 时间戳转换成日期
                         'YYYY-MM-DD HH:mm:ss')) : h('div', [h('span', {
                         style: {
                             color: '#c5c8ce'
@@ -226,26 +226,26 @@
                                 marginRight: '5px'
                             },
                             on: {
-                                click: () => {
-                                    this.showCarousel(params.row)
+                                click: () => {  // 点击图标按钮的时候
+                                    this.showCarousel(params.row)   // 显示轮播模态框
                                 }
                             }
                         }, '图片'),
-                        params.row.status >= 4 || params.row.status == 0 ? h('Button', {
+                        params.row.status >= 4 || params.row.status == 0 ? h('Button', {    // 已缴费或者已取消状态的时候，这个进行下一步的按钮不可点击
                             props: {
                                 type: 'text',
                                 size: 'small',
                                 disabled: true
                             }
                         }, this.statusMap.find(item => item.value == params.row.status).label) :
-                        h('Button', {
+                        h('Button', {   
                             props: {
                                 type: 'error',
                                 size: 'small'
                             },
                             on: {
                                 click: () => {
-                                    this.changeStatus(params.row)
+                                    this.changeStatus(params.row)   // 点击时进行下一步状态
                                 }
                             }
                         }, this.statusMap.find(item => item.value == params.row.status + 1).label)
@@ -259,7 +259,7 @@
             status: ''
         }
         rules = {
-            price: [{
+            price: [{   // 报价的弹框
                 validator: (rule, value, callback) => {
                     if (value === '') {
                         callback(new Error('请输入报价'));
@@ -276,27 +276,27 @@
         total = 2;
         searchWord = ''
         userList = [];
-        spinShow = true;
-        showCarouselModel = false;
-        showPartModel = false;
-        photos = [];
-        changePage(page) {
+        spinShow = true;    // loading
+        showCarouselModel = false;  // 显示轮播模态框
+        showPartModel = false;  // 显示零件模态框
+        photos = [];    // 照片的轮播模态框
+        changePage(page) {  //翻页方法
             this.page = page - 1
             this.spinShow = true
             this.fetchData()
         }
-        showCarousel(row) {
-            if (row.photos) {
-                this.photos = JSON.parse(row.photos)
-                this.showCarouselModel = true
+        showCarousel(row) { // 显示轮播模态框
+            if (row.photos) {   // 如果这一行的数据有照片
+                this.photos = JSON.parse(row.photos)    // 把照片数据解析出来放到数组里以备展示
+                this.showCarouselModel = true   // 打开照片弹框
             } else {
-                this.photos = []
+                this.photos = []    // 否则保持照片是空数组状态
                 this.$Message.warning('此报修未上传照片！');
             }
 
         }
 
-        submit() {
+        submit() {  // 提交报价表单
             var vm = this
             console.log(JSON.stringify(this.form))
             this.$refs['Form'].validate(async (valid) => {
@@ -315,10 +315,10 @@
         }
 
         async changeStatus(row) {
-            if (row.status < 3) {
+            if (row.status < 3) {   // 状态小于3的时候，只做简单的提示
                 let data = {
                     id: row.id,
-                    status: row.status + 1,
+                    status: row.status + 1, //下一步则是将状态码+1
                 }
                 this.$Modal.confirm({
                     title: '提示',
@@ -330,7 +330,7 @@
                         this.$Message.info('已取消');
                     }
                 });
-            } else {
+            } else {    // 大于等于3的时候要弹出对应的零件模态框
                 this.showPartModel = true
                 this.form.id = row.id
                 this.form.status = row.status + 1

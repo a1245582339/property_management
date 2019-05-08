@@ -62,7 +62,7 @@
                             },
                             on: {
                                 click: () => {
-                                    this.edit(params.row)
+                                    this.edit(params.row)   //点击编辑
                                 }
                             }
                         }, '编辑'),
@@ -73,7 +73,7 @@
                             },
                             on: {
                                 click: () => {
-                                    this.del(params.row)
+                                    this.del(params.row)    // 点击删除
                                 }
                             }
                         }, '删除')

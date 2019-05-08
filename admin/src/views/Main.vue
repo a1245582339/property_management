@@ -39,9 +39,9 @@
     export default class Main extends Vue {
         maxLogo = maxLogo;
         collapsed = false;
-        logout() {
-            removeToken()
-            this.$router.push({path: '/login'})
+        logout() {  // 登出方法
+            removeToken()   // 清除token
+            this.$router.push({path: '/login'}) // 跳转到登录页
         }
         created() {
 

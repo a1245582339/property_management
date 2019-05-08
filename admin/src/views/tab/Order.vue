@@ -36,23 +36,23 @@
                 key: 'count',
             },
         ];
-        page = 0;
-        total = 2;
-        orderList = [];
-        spinShow = true;
-        changePage(page) {
-            this.page = page - 1
-            this.spinShow = true
-            this.fetchData()
+        page = 0;   // 页码
+        total = 2;  // 总数
+        orderList = []; // 数据列表
+        spinShow = true;    // loading状态
+        changePage(page) {  // 改变页码
+            this.page = page - 1    // 页码从0起，所以要-1
+            this.spinShow = true    // 开始loading
+            this.fetchData()    // 获取数据
         }
         async fetchData() {
-            const res = await getOrder({
-                page: this.page
+            const res = await getOrder({    // 获取订单
+                page: this.page // 传入当前页码
             })
-            this.orderList = res.data.data
-            this.total = res.data.total
+            this.orderList = res.data.data  // 将获取到的数据放到页面数据里
+            this.total = res.data.total // 将获取到的数据总量赋值给页面的数据总量
             setTimeout(() => {
-                this.spinShow = false
+                this.spinShow = false   // 100毫秒后停止loading
             }, 100)
 
         };

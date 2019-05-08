@@ -13,6 +13,7 @@
     
 </template>
 <script>
+    // 此页面大部分与homeuser注释一样
     import {
         getHomeUsers,
         updateUser
@@ -95,20 +96,20 @@
                     return h('p', `确定删除此业主并同时删除其所有家庭成员？`)
                 },
                 onOk: () => {
-                    updateUser({
-                        id: id,
-                        isDel: 1
-                    }).then(res => {
-                        this.$Message.success('删除成功');
-                        this.page = 0
-                        this.fetchData()
+                    updateUser({       // 更新用户（删除）
+                        id: id,     // 用户的id
+                        isDel: 1    // 被删除状态改成1
+                    }).then(res => {    // 成功
+                        this.$Message.success('删除成功');  // 成功后提示
+                        this.page = 0   // 页码设置为0
+                        this.fetchData()    // 重新获取数据
                     })
 
                 }
             })
         }
         async fetchData() {
-            const res = await getHomeUsers({role: 2, page: this.page})
+            const res = await getHomeUsers({role: 2, page: this.page})  // 查询
             this.userList = res.data.data.map(item => {
                 return {
                     ...item,
