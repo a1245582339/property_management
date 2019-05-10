@@ -92,15 +92,15 @@ exports.updateUser = async ctx => {
             }
             return total.concat([`${curr}="${user[curr]}"`])
         }, [])).toString()
-        if (user.isDel) {
-            $selectRoom = `select room_id from user where id="${user.id}";`
+        if (user.isDel) {   // 如果是要删除业主
+            $selectRoom = `select room_id from user where id="${user.id}";` // 查询到这个人所在的房间
             let room_id = (await model.operateSql($selectRoom))[0].room_id
-            $updateUser = `update user set isDel=1 where room_id="${room_id}";`
+            $updateUser = `update user set isDel=1 where room_id="${room_id}";` // 把这个房间的其他人一起删除
             await model.operateSql($updateUser)
         }
-        $sql = `update user set ${setStr} where id="${user.id}";`
+        $sql = `update user set ${setStr} where id="${user.id}";`   // 更新这个人的信息
     } else {
-        $checkNameExist = `select * from user where name="${user.name}"`
+        $checkNameExist = `select * from user where name="${user.name}"`    // 查询是否有重名的
         let nameCheckArr = await model.operateSql($checkNameExist)
         if (nameCheckArr.length) {
             ctx.body = {
@@ -110,7 +110,7 @@ exports.updateUser = async ctx => {
             return
         }
         let values = Object.values(user).map(item => `"${item}"`).toString()
-        $sql = `insert into user (${Object.keys(user).toString()}) value (${values})`
+        $sql = `insert into user (${Object.keys(user).toString()}) value (${values})`   // 创建新的人
     }
     console.log($sql)
     await model.operateSql($sql)
@@ -130,10 +130,10 @@ exports.updateUser = async ctx => {
 // 将普通家庭成员改为业主
 exports.userToOwner = async ctx => {
     let user = ctx.request.body
-    let $selectOldUser = `select * from user where isDel=0 and role=1 and room_id=${user.room_id}`
+    let $selectOldUser = `select * from user where isDel=0 and role=1 and room_id=${user.room_id}`  // 查询到之前的业主
     const oldUser = await model.operateSql($selectOldUser)
-    $newOwner = `update user set role=1 where id="${user.id}";`
-    $oldOwner = `update user set role=2 where id="${oldUser[0].id}";`
+    $newOwner = `update user set role=1 where id="${user.id}";` // 把之前的业主设置为普通成员
+    $oldOwner = `update user set role=2 where id="${oldUser[0].id}";`   // 要设置的这个人设置为业主
     console.log($oldOwner)
     try {
         await model.operateSql($newOwner)

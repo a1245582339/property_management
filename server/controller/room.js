@@ -6,6 +6,7 @@ exports.getRoom = async ctx => {
         return [...total, `room.${curr}="${query[curr]}"`]
     }, []).join(' and ')
     let $selectRoom = `select room.*,user.name,user.nick_name,user.tel,user.role,user.isDel from room left join user on user.room_id=room.id and user.isDel=0 ${whereStr ? 'and' + whereStr : ''} order by room.id` 
+    // 查询房间列表
     console.log($selectRoom)
     await model.operateSql($selectRoom).then(res => {
         // res = res.filter(item => {
@@ -16,11 +17,11 @@ exports.getRoom = async ctx => {
                 return total
             }
             let item 
-            if (curr.role === 0 || curr.role === 1 ) {
-                const { id, room_num, building, area } = curr
+            if (curr.role === 0 || curr.role === 1 ) {  // 如果不是业主
+                const { id, room_num, building, area } = curr 
                 item = { id, room_num, building, area }
-            } else {
-                item = curr
+            } else {    // 如果是业主
+                item = curr // 直接返回
             }
             return [...total, item]
         }, [])
